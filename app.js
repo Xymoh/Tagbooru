@@ -7,6 +7,7 @@ const DOM = {
     styleOutput: document.getElementById("styleOutput"),
     characterOutput: document.getElementById("characterOutput"),
     landscapeOutput: document.getElementById("landscapeOutput"),
+    nsfwOutput: document.getElementById("nsfwOutput"),
     otherOutput: document.getElementById("otherOutput"),
     copyButtons: document.querySelectorAll(".copy-btn"),
 };
@@ -40,7 +41,17 @@ const CHARACTER_LOOKS_KEYWORDS = [
     "gloves", "boots", "stockings", "ears", "tail", "horns", "wings", "android", "cyborg",
     "weapon", "sword", "gun", "nude", "nsfw", "hips", "thigh", "thighs", "waist", "navel",
     "midriff", "skin", "braid", "braids", "crop top", "uniform", "elbow gloves", "twintails",
-    "very long hair", "long hair", "green hair", "green eyes",
+    "very long hair", "long hair", "green hair", "green eyes", "bangs", "arched bangs", "sleeveless",
+    "sleeveless shirt", "piercing", "animal ear piercing", "ear piercing", "fringe", "ponytail",
+    "bob cut", "blush", "lipstick", "eyeliner", "eyeshadow", "freckles", "fang", "fangs",
+    "body", "torso", "chest", "abs", "muscular", "curvy", "petite", "skinny", "plump",
+];
+
+const NSFW_KEYWORDS = [
+    "nsfw", "nude", "naked", "nipples", "areola", "breasts", "boobs", "cleavage", "underboob",
+    "sideboob", "pussy", "vagina", "penis", "ass", "anus", "butt", "sex", "cum", "orgasm",
+    "erotic", "explicit", "uncensored", "lewd", "suggestive", "lingerie", "panties", "thong",
+    "cameltoe", "topless", "bottomless",
 ];
 
 const COMPOSITION_META_KEYWORDS = [
@@ -156,6 +167,10 @@ function categorizeTag(tagObj) {
     const text = danbooruToTagText(tagObj.name);
     const lower = text.toLowerCase();
 
+    if (containsKeyword(lower, NSFW_KEYWORDS)) {
+        return "nsfw";
+    }
+
     if (
         tagObj.category === TAG_CATEGORY.ARTIST ||
         containsKeyword(lower, STYLE_KEYWORDS)
@@ -238,6 +253,7 @@ async function analyzeInput() {
             style: [],
             character: [],
             landscape: [],
+            nsfw: [],
             other: [],
         };
 
@@ -251,6 +267,7 @@ async function analyzeInput() {
         DOM.styleOutput.value = toPromptLine([...new Set(buckets.style)]);
         DOM.characterOutput.value = toPromptLine([...new Set(buckets.character)]);
         DOM.landscapeOutput.value = toPromptLine([...new Set(buckets.landscape)]);
+        DOM.nsfwOutput.value = toPromptLine([...new Set(buckets.nsfw)]);
         DOM.otherOutput.value = toPromptLine([...new Set(buckets.other)]);
 
         if (allMatched.length === 0) {
@@ -272,6 +289,7 @@ function clearAll() {
     DOM.styleOutput.value = "";
     DOM.characterOutput.value = "";
     DOM.landscapeOutput.value = "";
+    DOM.nsfwOutput.value = "";
     DOM.otherOutput.value = "";
     setStatus("Ready.");
 }
