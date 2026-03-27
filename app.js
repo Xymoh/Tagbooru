@@ -10,7 +10,6 @@ const DOM = {
     landscapeOutput: document.getElementById("landscapeOutput"),
     nsfwOutput: document.getElementById("nsfwOutput"),
     otherOutput: document.getElementById("otherOutput"),
-    uncertainOutput: document.getElementById("uncertainOutput"),
     copyButtons: document.querySelectorAll(".copy-btn"),
 };
 
@@ -97,9 +96,17 @@ function splitAndCleanCandidates(rawText) {
             continue;
         }
 
+        // Remove escaping used in copied tag syntax like \( and \).
+        const unescaped = piece
+            .replace(/\\\(/g, "(")
+            .replace(/\\\)/g, ")")
+            .replace(/\\_/g, "_")
+            .replace(/\\/g, "");
+
         // Remove trailing popularity counts like 7.6M, 29k, 665
-        const withoutCount = piece.replace(/\s+\d+(?:\.\d+)?[kmb]?$/i, "").trim();
-        const stripped = withoutCount.replace(/[\[\]{}()"']/g, " ").replace(/\s+/g, " ").trim();
+        const withoutCount = unescaped.replace(/\s+\d+(?:\.\d+)?[kmb]?$/i, "").trim();
+        // Keep parentheses because Danbooru character disambiguation uses them.
+        const stripped = withoutCount.replace(/[\[\]{}"']/g, " ").replace(/\s+/g, " ").trim();
 
         if (!stripped || stripped === "?") {
             continue;
@@ -253,7 +260,7 @@ async function analyzeInput() {
         }
 
         const allMatchedMap = new Map();
-        const uncertainItems = [];
+        const lowConfidenceOther = [];
 
         for (const candidate of candidates) {
             const query = tagToDanbooruQuery(candidate);
@@ -261,17 +268,17 @@ async function analyzeInput() {
             const best = pickBestTag(candidate, matches);
 
             if (!best) {
-                uncertainItems.push(`${candidate} -> no close Danbooru match`);
+                lowConfidenceOther.push(candidate);
                 continue;
             }
 
             if (best.score < 35) {
-                uncertainItems.push(`${candidate} -> weak match: ${danbooruToTagText(best.tag.name)} (${best.score})`);
+                lowConfidenceOther.push(candidate);
                 continue;
             }
 
             if (best.score < 55) {
-                uncertainItems.push(`${candidate} -> borderline match: ${danbooruToTagText(best.tag.name)} (${best.score})`);
+                lowConfidenceOther.push(danbooruToTagText(best.tag.name));
             }
 
             allMatchedMap.set(best.tag.name, best.tag);
@@ -299,8 +306,7 @@ async function analyzeInput() {
         DOM.looksOutput.value = toPromptLine([...new Set(buckets.looks)]);
         DOM.landscapeOutput.value = toPromptLine([...new Set(buckets.landscape)]);
         DOM.nsfwOutput.value = toPromptLine([...new Set(buckets.nsfw)]);
-        DOM.otherOutput.value = toPromptLine([...new Set(buckets.other)]);
-        DOM.uncertainOutput.value = uncertainItems.join("\n");
+        DOM.otherOutput.value = toPromptLine([...new Set([...buckets.other, ...lowConfidenceOther])]);
 
         if (allMatched.length === 0) {
             setStatus("No Danbooru tags matched confidently. Try cleaner words or shorter phrases.", true);
@@ -324,7 +330,6 @@ function clearAll() {
     DOM.landscapeOutput.value = "";
     DOM.nsfwOutput.value = "";
     DOM.otherOutput.value = "";
-    DOM.uncertainOutput.value = "";
     setStatus("Ready.");
 }
 
