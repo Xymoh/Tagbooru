@@ -11,6 +11,7 @@ export const STYLE_KEYWORDS = [
     "anime coloring", "dramatic lighting", "volumetric lighting", "depth of field", "lineart",
     "shaded", "cel shading", "render", "illustration", "ultra detailed", "detailed",
     "score_", "quality", "stylized", "painting", "watercolor", "sketch", "concept art",
+    "anime screenshot", "pixelated", "pixel art", "realistic", "amazing",
 ];
 
 export const LANDSCAPE_KEYWORDS = [
@@ -38,15 +39,16 @@ export const LOOKS_KEYWORDS = [
     "ear piercing", "fringe", "ponytail", "bob cut", "blush", "lipstick", "eyeliner", "eyeshadow",
     "freckles", "fang", "fangs", "body", "torso", "chest", "abs", "muscular", "curvy", "petite",
     "skinny", "plump", "lips", "makeup", "nail polish", "red lips", "red nails", "nails",
-    "staff", "badge", "necktie", "holster", "streaks",
+    "staff", "badge", "necktie", "holster", "streaks", "torn clothes",
     "ribbon", "vest", "collar", "metal collar", "neck ribbon", "blue ribbon", "blue vest",
+    "veins", "green veins", "corruption", "corrupted",
 ];
 
 export const ACTION_KEYWORDS = [
     "trembling", "under table", "speech bubble", "running", "walking", "jumping", "falling",
     "attacking", "fighting", "kicking", "punching", "pointing", "waving", "holding",
     "aiming", "shooting", "dancing", "hugging", "kissing", "crying", "laughing",
-    "sitting", "standing", "lying", "kneeling", "crouching", "leaning", "posing",
+    "sitting", "standing", "lying", "kneeling", "crouching", "leaning", "posing", "defeat",
 ];
 
 export const NSFW_KEYWORDS = [
@@ -54,8 +56,10 @@ export const NSFW_KEYWORDS = [
     "sideboob", "pussy", "vagina", "penis", "ass", "anus", "butt", "sex", "cum", "orgasm",
     "erotic", "explicit", "uncensored", "lewd", "suggestive", "lingerie", "panties", "thong",
     "cameltoe", "topless", "bottomless", "fellatio", "testicles", "scrotum", "oral",
-    "censored", "bar censor",
+    "censored", "bar censor", "rape", "interracial", "interspecies", "spitroast", "irrumatio",
+    "cock", "cum on face", "cum on cheek", "cum on body", "internal cumshot", "facialcumshot",
 ];
+
 
 export const LOOKS_EXACT_TAGS = new Set(["v"]);
 export const STYLE_EXACT_TAGS = new Set(["zenless zone zero"]);
