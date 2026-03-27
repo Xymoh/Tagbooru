@@ -11,7 +11,21 @@ export const STYLE_KEYWORDS = [
     "anime coloring", "dramatic lighting", "volumetric lighting", "depth of field", "lineart",
     "shaded", "cel shading", "render", "illustration", "ultra detailed", "detailed",
     "score_", "quality", "stylized", "painting", "watercolor", "sketch", "concept art",
-    "anime screenshot", "pixelated", "pixel art", "realistic", "amazing",
+    "anime screenshot", "pixelated", "pixel art", "realistic", "amazing", "amazing quality",
+    // Visual Aesthetics & Art Movements
+    "cyberpunk", "steampunk", "synthwave", "vaporwave", "surreal", "abstract", "impressionism", "cubism",
+    "art deco", "art nouveau", "glitch art", "glitch", "low poly", "retro",
+    // Techniques & Effects
+    "bloom", "bokeh", "lens flare", "motion blur", "silhouette", "chiaroscuro", "chromatic aberration",
+    "film grain", "gradient", "halftone", "scanlines", "dithering", "posterize",
+    // Color & Tone
+    "monochrome", "greyscale", "sepia", "pastel colors", "pastel", "saturated", "saturated colors",
+    "muted color", "dark", "moody", "vibrant", "colorful", "limited palette", "neon palette",
+    // Media Format
+    "3d", "comic", "manga", "official art", "scan", "promo", "promo art", "advertisement",
+    // Drawing Style
+    "flat color", "vector", "vector art", "oil painting", "watercolor painting", "digital painting",
+    "traditional media", "hand drawn", "sketch style", "comic book style", "comic style",
 ];
 
 export const LANDSCAPE_KEYWORDS = [
@@ -20,12 +34,26 @@ export const LANDSCAPE_KEYWORDS = [
     "night", "day", "rain", "snow", "storm", "garden", "field", "park", "castle", "temple",
     "space", "moon", "stars", "window", "balcony", "court", "volleyball court", "basketball court",
     "stadium", "arena", "gymnasium", "gym",
+    // Additional locations from Danbooru
+    "highway", "road", "pathway", "bridge", "tunnel", "cave", "cliff", "valley",
+    "volcano", "desert", "savanna", "jungle", "swamp", "wetland", "meadow", "grassland",
+    "waterfall", "lake", "pond", "creek", "stream", "canal", "dock", "harbor",
+    "lighthouse", "tower", "ruins", "tomb", "dungeon", "fortress", "wall",
+    "school", "classroom", "library", "cafeteria", "hallway", "dormitory",
+    "hospital", "office", "factory", "warehouse", "store", "restaurant", "bar",
+    "house", "apartment", "mansion", "cottage", "cabin", "tent", "caravan",
+    "bedroom", "bathroom", "living room", "dining room", "kitchen", "basement",
+    "rooftop", "balcony", "porch", "garden", "courtyard", "alley", "plaza",
+    "marketplace", "village", "town", "countryside", "suburb", "metropolis",
+    "train station", "bus stop", "airport", "port", "parking lot", "gas station",
+    "movie theater", "amusement park", "carnival", "fair", "festival", "concert",
+    "spaceship", "spacecraft", "futuristic city", "cyberpunk city", "alien planet",
 ];
 
 export const CHARACTER_IDENTITY_KEYWORDS = [
     "girl", "boy", "woman", "man", "1girl", "1boy", "2girls", "2boys", "solo", "duo",
     "android", "cyborg", "elf", "demon", "angel", "catgirl", "fox girl", "schoolgirl",
-    "policewoman",
+    "policewoman", "zombie", "monster", "monster male", "monster female",
 ];
 
 export const CHARACTER_IDENTITY_EXACT_TAGS = new Set(["police", "bangboo"]);
@@ -42,6 +70,16 @@ export const LOOKS_KEYWORDS = [
     "staff", "badge", "necktie", "holster", "streaks", "torn clothes",
     "ribbon", "vest", "collar", "metal collar", "neck ribbon", "blue ribbon", "blue vest",
     "veins", "green veins", "corruption", "corrupted",
+    // Additional body parts & clothing
+    "coat", "cape", "cloak", "robe", "dress", "gown", "pants", "shorts", "leggings",
+    "hoodie", "sweater", "cardigan", "tank top", "tube top", "strapless", "backless",
+    "apron", "bow", "bowtie", "tie", "scarf", "necklace", "choker", "pendant", "earrings",
+    "bracelet", "ring", "watch", "armband", "armlet", "gauntlet", "knee high boots",
+    "thigh boots", "over the knee", "zettai ryouiki", "sailor uniform", "school uniform",
+    "maid outfit", "bunny ears", "halo", "crown", "tiara", "hair ornament", "hair clip",
+    "headband", "bandage", "tattoo", "tattoos", "scar", "scar across eye", "muscular male",
+    "crossdressing", "dress lift", "panties", "bra", "bikini", "swimsuit", "leotard",
+    "white shirt", "black shirt", "colored hair", "shiny hair", "wet", "sweat", "crying",
 ];
 
 export const ACTION_KEYWORDS = [
@@ -49,6 +87,16 @@ export const ACTION_KEYWORDS = [
     "attacking", "fighting", "kicking", "punching", "pointing", "waving", "holding",
     "aiming", "shooting", "dancing", "hugging", "kissing", "crying", "laughing",
     "sitting", "standing", "lying", "kneeling", "crouching", "leaning", "posing", "defeat",
+    // Additional actions & verbs
+    "swimming", "flying", "riding", "driving", "climbing", "sliding", "stretching",
+    "reaching", "touching", "grabbing", "throwing", "catching", "swinging", "spinning",
+    "bending", "stretching", "looking", "gazing", "staring", "glancing", "peeking",
+    "smiling", "frowning", "grimacing", "grinning", "yawning", "sleeping", "waking",
+    "talking", "speaking", "shouting", "screaming", "singing", "playing", "eating",
+    "drinking", "smoking", "writing", "drawing", "painting", "reading", "thinking",
+    "praying", "meditating", "exercising", "training", "practicing", "performing",
+    "jumping jacks", "push ups", "pull ups", "stretch", "yoga", "pilates", "boxing",
+    "zombification", "transformation", "magic circle", "spell", "summoning",
 ];
 
 export const NSFW_KEYWORDS = [
@@ -68,6 +116,10 @@ export const COMPOSITION_META_KEYWORDS = [
     "looking at viewer", "looking over shoulder", "from below", "from above", "side view",
     "profile", "upper body", "full body", "cowboy shot", "close-up", "close up", "dutch angle",
     "dynamic angle", "foreshortening", "head tilt", "back view", "rear view", "pov",
+    "from behind", "from side", "lower body", "portrait", "head portrait", "bust shot",
+    "symmetry", "panorama", "scenic", "scenery", "still life", "landscape shot", "wide shot",
+    "extreme closeup", "extreme close-up", "fisheye", "bird's-eye view", "low angle", "high angle",
+    "triptych", "silhouette shot", "overhead shot", "aerial view", "first person view",
 ];
 
 export const OUTPUT_KEYS = ["all", "style", "character", "looks", "landscape", "action", "nsfw", "other"];

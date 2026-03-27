@@ -13,7 +13,7 @@ export function splitAndCleanCandidates(rawText) {
             continue;
         }
 
-        const withoutLeadingMarker = piece.replace(/^[\s?*\-•]+/, "").trim();
+        const withoutLeadingMarker = piece.replace(/^[\s?*\-•#]+/, "").trim();
         if (!withoutLeadingMarker) {
             continue;
         }
@@ -25,8 +25,15 @@ export function splitAndCleanCandidates(rawText) {
             .replace(/\\/g, "");
 
         const withoutCount = unescaped.replace(/\s+\d+(?:\.\d+)?[kmb]?$/i, "").trim();
-        const stripped = withoutCount
-            .replace(/[\[\]{}"']/g, " ")
+        
+        // Only replace brackets with spaces if they're not balanced parentheses
+        let stripped = withoutCount;
+        const hasBalancedParens = (stripped.match(/\(/g) || []).length === (stripped.match(/\)/g) || []).length;
+        if (!hasBalancedParens) {
+            stripped = stripped.replace(/[\[\]{}]/g, " ");
+        }
+        
+        stripped = stripped
             .replace(/[.,:]+$/g, "")
             .replace(/\s+/g, " ")
             .trim();
