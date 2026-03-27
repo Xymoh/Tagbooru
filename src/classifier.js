@@ -37,9 +37,12 @@ export function categorizeTag(tagObj) {
         return "looks";
     }
 
+    if (tagObj.category === TAG_CATEGORY.COPYRIGHT) {
+        return "copyright";
+    }
+
     if (
         tagObj.category === TAG_CATEGORY.CHARACTER ||
-        tagObj.category === TAG_CATEGORY.COPYRIGHT ||
         CHARACTER_IDENTITY_EXACT_TAGS.has(lower) ||
         containsKeyword(lower, CHARACTER_IDENTITY_KEYWORDS)
     ) {
@@ -55,7 +58,7 @@ export function categorizeTag(tagObj) {
     }
 
     if (containsKeyword(lower, COMPOSITION_META_KEYWORDS)) {
-        return "other";
+        return "composition";
     }
 
     if (tagObj.category === TAG_CATEGORY.META || tagObj.category === TAG_CATEGORY.GENERAL) {

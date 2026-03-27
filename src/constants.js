@@ -80,6 +80,10 @@ export const LOOKS_KEYWORDS = [
     "headband", "bandage", "tattoo", "tattoos", "scar", "scar across eye", "muscular male",
     "crossdressing", "dress lift", "panties", "bra", "bikini", "swimsuit", "leotard",
     "white shirt", "black shirt", "colored hair", "shiny hair", "wet", "sweat", "crying",
+        "dark-skinned", "dark skin", "light-skinned", "pale skin", "asian", "tanned", "dark tone",
+        "veiny", "veiny penis", "large penis", "muscular male", "thick thighs", "perky breasts",
+        "sagging breasts", "lactation", "milk", "drool", "spit", "sweat", "aroused", "lusty",
+        "muscle definition", "toned", "fit", "chubby", "obese", "athletic", "lean",
 ];
 
 export const ACTION_KEYWORDS = [
@@ -120,6 +124,7 @@ export const COMPOSITION_META_KEYWORDS = [
     "symmetry", "panorama", "scenic", "scenery", "still life", "landscape shot", "wide shot",
     "extreme closeup", "extreme close-up", "fisheye", "bird's-eye view", "low angle", "high angle",
     "triptych", "silhouette shot", "overhead shot", "aerial view", "first person view",
+    "on back", "on side", "on stomach", "on knees", "bent over", "leaning back", "arched back",
 ];
 
-export const OUTPUT_KEYS = ["all", "style", "character", "looks", "landscape", "action", "nsfw", "other"];
+export const OUTPUT_KEYS = ["all", "style", "character", "looks", "composition", "landscape", "action", "nsfw", "copyright", "other"];

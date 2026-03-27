@@ -9,9 +9,11 @@ const OUTPUT_LAYOUT = [
     { key: "style", title: "Style / Quality" },
     { key: "character", title: "Character" },
     { key: "looks", title: "Looks / Appearance" },
+    { key: "composition", title: "Composition / Framing" },
     { key: "landscape", title: "Landscape / Scene" },
     { key: "action", title: "Action" },
     { key: "nsfw", title: "NSFW Detected" },
+    { key: "copyright", title: "Copyright / Franchise" },
     { key: "other", title: "Other / Meta", full: true },
 ];
 
@@ -20,9 +22,11 @@ const EMPTY_OUTPUTS = {
     style: "",
     character: "",
     looks: "",
+    composition: "",
     landscape: "",
     action: "",
     nsfw: "",
+    copyright: "",
     other: "",
 };
 
@@ -104,16 +108,22 @@ export default function App() {
                 style: [],
                 character: [],
                 looks: [],
+                composition: [],
                 landscape: [],
                 action: [],
                 nsfw: [],
+                copyright: [],
                 other: [],
             };
 
             for (const tag of allMatched) {
                 const category = categorizeTag(tag);
                 const text = danbooruToTagText(tag.name);
-                buckets[category].push(text);
+                if (buckets[category]) {
+                    buckets[category].push(text);
+                } else {
+                    buckets.other.push(text);
+                }
             }
 
             setOutputs({
@@ -121,9 +131,11 @@ export default function App() {
                 style: toPromptLine([...new Set(buckets.style)]),
                 character: toPromptLine([...new Set(buckets.character)]),
                 looks: toPromptLine([...new Set(buckets.looks)]),
+                composition: toPromptLine([...new Set(buckets.composition)]),
                 landscape: toPromptLine([...new Set(buckets.landscape)]),
                 action: toPromptLine([...new Set(buckets.action)]),
                 nsfw: toPromptLine([...new Set(buckets.nsfw)]),
+                copyright: toPromptLine([...new Set(buckets.copyright)]),
                 other: toPromptLine([...new Set([...buckets.other, ...lowConfidenceOther])]),
             });
 
