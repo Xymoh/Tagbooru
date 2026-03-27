@@ -95,6 +95,24 @@ h1 {
     backdrop-filter: blur(8px);
 }
 
+.demo-note {
+    border-left: 4px solid var(--primary);
+}
+
+.demo-title {
+    margin: 0 0 0.35rem;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.demo-text {
+    margin: 0.15rem 0;
+    color: var(--muted);
+}
+
 label {
     display: block;
     font-weight: 700;
