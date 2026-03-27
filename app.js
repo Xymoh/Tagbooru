@@ -30,15 +30,28 @@ const LANDSCAPE_KEYWORDS = [
     "sky", "cloud", "sunset", "sunrise", "forest", "mountain", "river", "ocean", "beach",
     "city", "street", "building", "room", "indoors", "outdoors", "background", "landscape",
     "night", "day", "rain", "snow", "storm", "garden", "field", "park", "castle", "temple",
-    "space", "moon", "stars", "window", "balcony",
+    "space", "moon", "stars", "window", "balcony", "court", "volleyball court", "basketball court",
+    "stadium", "arena", "gymnasium", "gym",
 ];
 
 const CHARACTER_LOOKS_KEYWORDS = [
     "girl", "boy", "woman", "man", "1girl", "1boy", "2girls", "2boys", "solo", "duo",
     "hair", "eyes", "face", "smile", "expression", "dress", "shirt", "skirt", "jacket",
     "gloves", "boots", "stockings", "ears", "tail", "horns", "wings", "android", "cyborg",
-    "looking", "pose", "sitting", "standing", "weapon", "sword", "gun", "nude", "nsfw",
+    "weapon", "sword", "gun", "nude", "nsfw", "hips", "thigh", "thighs", "waist", "navel",
+    "midriff", "skin", "braid", "braids", "crop top", "uniform", "elbow gloves", "twintails",
+    "very long hair", "long hair", "green hair", "green eyes",
 ];
+
+const COMPOSITION_META_KEYWORDS = [
+    "looking at viewer", "looking over shoulder", "from below", "from above", "side view",
+    "profile", "upper body", "full body", "cowboy shot", "close-up", "close up", "dutch angle",
+    "dynamic angle", "foreshortening", "head tilt", "back view", "rear view", "pov",
+];
+
+function containsKeyword(text, keywords) {
+    return keywords.some((key) => text.includes(key));
+}
 
 function normalizeTagName(tag) {
     return tag.trim().toLowerCase().replace(/\s+/g, " ");
@@ -145,21 +158,25 @@ function categorizeTag(tagObj) {
 
     if (
         tagObj.category === TAG_CATEGORY.ARTIST ||
-        STYLE_KEYWORDS.some((key) => lower.includes(key))
+        containsKeyword(lower, STYLE_KEYWORDS)
     ) {
         return "style";
+    }
+
+    if (containsKeyword(lower, COMPOSITION_META_KEYWORDS)) {
+        return "other";
+    }
+
+    if (containsKeyword(lower, LANDSCAPE_KEYWORDS)) {
+        return "landscape";
     }
 
     if (
         tagObj.category === TAG_CATEGORY.CHARACTER ||
         tagObj.category === TAG_CATEGORY.COPYRIGHT ||
-        CHARACTER_LOOKS_KEYWORDS.some((key) => lower.includes(key))
+        containsKeyword(lower, CHARACTER_LOOKS_KEYWORDS)
     ) {
         return "character";
-    }
-
-    if (LANDSCAPE_KEYWORDS.some((key) => lower.includes(key))) {
-        return "landscape";
     }
 
     if (tagObj.category === TAG_CATEGORY.META) {
