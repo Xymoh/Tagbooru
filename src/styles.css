@@ -25,6 +25,11 @@ body {
     overflow-x: hidden;
 }
 
+#root {
+    min-height: 100vh;
+    position: relative;
+}
+
 .bg-shape {
     position: fixed;
     z-index: 0;

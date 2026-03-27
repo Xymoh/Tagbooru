@@ -153,8 +153,8 @@ export default function App() {
                 </header>
 
                 <section className="panel demo-note">
-                    <p className="demo-title">Demo Build</p>
-                    <p className="demo-text">This is a demo version. Feedback and comments are welcome.</p>
+                    <p className="demo-title">Alpha Build</p>
+                    <p className="demo-text">This is a alpha version. Feedback and comments are welcome.</p>
                     <p className="demo-text">DM on Discord: <strong>sathean</strong> (icon: Miku + Leon Kennedy).</p>
                 </section>
 
