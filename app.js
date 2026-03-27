@@ -8,6 +8,7 @@ const DOM = {
     characterOutput: document.getElementById("characterOutput"),
     looksOutput: document.getElementById("looksOutput"),
     landscapeOutput: document.getElementById("landscapeOutput"),
+    actionOutput: document.getElementById("actionOutput"),
     nsfwOutput: document.getElementById("nsfwOutput"),
     otherOutput: document.getElementById("otherOutput"),
     copyButtons: document.querySelectorAll(".copy-btn"),
@@ -39,7 +40,10 @@ const LANDSCAPE_KEYWORDS = [
 const CHARACTER_IDENTITY_KEYWORDS = [
     "girl", "boy", "woman", "man", "1girl", "1boy", "2girls", "2boys", "solo", "duo",
     "android", "cyborg", "elf", "demon", "angel", "catgirl", "fox girl", "schoolgirl",
+    "policewoman",
 ];
+
+const CHARACTER_IDENTITY_EXACT_TAGS = new Set(["police", "bangboo"]);
 
 const LOOKS_KEYWORDS = [
     "hair", "eyes", "face", "smile", "expression", "dress", "shirt", "skirt", "jacket",
@@ -50,6 +54,15 @@ const LOOKS_KEYWORDS = [
     "ear piercing", "fringe", "ponytail", "bob cut", "blush", "lipstick", "eyeliner", "eyeshadow",
     "freckles", "fang", "fangs", "body", "torso", "chest", "abs", "muscular", "curvy", "petite",
     "skinny", "plump", "lips", "makeup", "nail polish", "red lips", "red nails", "nails",
+    "staff", "badge", "necktie", "holster", "streaks",
+    "ribbon", "vest", "collar", "metal collar", "neck ribbon", "blue ribbon", "blue vest",
+];
+
+const ACTION_KEYWORDS = [
+    "trembling", "under table", "speech bubble", "running", "walking", "jumping", "falling",
+    "attacking", "fighting", "kicking", "punching", "pointing", "waving", "holding",
+    "aiming", "shooting", "dancing", "hugging", "kissing", "crying", "laughing",
+    "sitting", "standing", "lying", "kneeling", "crouching", "leaning", "posing",
 ];
 
 const NSFW_KEYWORDS = [
@@ -57,9 +70,11 @@ const NSFW_KEYWORDS = [
     "sideboob", "pussy", "vagina", "penis", "ass", "anus", "butt", "sex", "cum", "orgasm",
     "erotic", "explicit", "uncensored", "lewd", "suggestive", "lingerie", "panties", "thong",
     "cameltoe", "topless", "bottomless", "fellatio", "testicles", "scrotum", "oral",
+    "censored", "bar censor",
 ];
 
 const LOOKS_EXACT_TAGS = new Set(["v"]);
+const STYLE_EXACT_TAGS = new Set(["zenless zone zero"]);
 
 const COMPOSITION_META_KEYWORDS = [
     "looking at viewer", "looking over shoulder", "from below", "from above", "side view",
@@ -96,8 +111,14 @@ function splitAndCleanCandidates(rawText) {
             continue;
         }
 
+        // Support copied list formats like '? tag 79k' or '- tag 1.2k'.
+        const withoutLeadingMarker = piece.replace(/^[\s?*\-•]+/, "").trim();
+        if (!withoutLeadingMarker) {
+            continue;
+        }
+
         // Remove escaping used in copied tag syntax like \( and \).
-        const unescaped = piece
+        const unescaped = withoutLeadingMarker
             .replace(/\\\(/g, "(")
             .replace(/\\\)/g, ")")
             .replace(/\\_/g, "_")
@@ -106,15 +127,24 @@ function splitAndCleanCandidates(rawText) {
         // Remove trailing popularity counts like 7.6M, 29k, 665
         const withoutCount = unescaped.replace(/\s+\d+(?:\.\d+)?[kmb]?$/i, "").trim();
         // Keep parentheses because Danbooru character disambiguation uses them.
-        const stripped = withoutCount.replace(/[\[\]{}"']/g, " ").replace(/\s+/g, " ").trim();
+        const stripped = withoutCount
+            .replace(/[\[\]{}"']/g, " ")
+            .replace(/[.,:]+$/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
 
         if (!stripped || stripped === "?") {
             continue;
         }
 
+        // Ignore orphaned copyright suffixes produced by noisy inputs, e.g. "(zenless zone zero)".
+        if (/^\([^()]+\)$/.test(stripped)) {
+            continue;
+        }
+
         // If we still have a long phrase, keep full phrase and key n-grams to increase hit chance.
         const words = stripped.split(" ").filter(Boolean);
-        if (words.length > 3) {
+        if (words.length > 3 && !(stripped.includes("(") && stripped.includes(")"))) {
             candidates.push(words.slice(0, 3).join(" "));
             candidates.push(words.slice(-3).join(" "));
         }
@@ -192,29 +222,35 @@ function categorizeTag(tagObj) {
 
     if (
         tagObj.category === TAG_CATEGORY.ARTIST ||
+        STYLE_EXACT_TAGS.has(lower) ||
         containsKeyword(lower, STYLE_KEYWORDS)
     ) {
         return "style";
     }
 
-    if (containsKeyword(lower, COMPOSITION_META_KEYWORDS)) {
-        return "other";
+    if (containsKeyword(lower, LOOKS_KEYWORDS) || lower.includes("handlebar") || lower.includes("battery")) {
+        return "looks";
+    }
+
+    if (
+        tagObj.category === TAG_CATEGORY.CHARACTER ||
+        tagObj.category === TAG_CATEGORY.COPYRIGHT ||
+        CHARACTER_IDENTITY_EXACT_TAGS.has(lower) ||
+        containsKeyword(lower, CHARACTER_IDENTITY_KEYWORDS)
+    ) {
+        return "character";
     }
 
     if (containsKeyword(lower, LANDSCAPE_KEYWORDS)) {
         return "landscape";
     }
 
-    if (
-        tagObj.category === TAG_CATEGORY.CHARACTER ||
-        tagObj.category === TAG_CATEGORY.COPYRIGHT ||
-        containsKeyword(lower, CHARACTER_IDENTITY_KEYWORDS)
-    ) {
-        return "character";
+    if (containsKeyword(lower, ACTION_KEYWORDS)) {
+        return "action";
     }
 
-    if (containsKeyword(lower, LOOKS_KEYWORDS)) {
-        return "looks";
+    if (containsKeyword(lower, COMPOSITION_META_KEYWORDS)) {
+        return "other";
     }
 
     if (tagObj.category === TAG_CATEGORY.META) {
@@ -290,6 +326,7 @@ async function analyzeInput() {
             character: [],
             looks: [],
             landscape: [],
+            action: [],
             nsfw: [],
             other: [],
         };
@@ -305,6 +342,7 @@ async function analyzeInput() {
         DOM.characterOutput.value = toPromptLine([...new Set(buckets.character)]);
         DOM.looksOutput.value = toPromptLine([...new Set(buckets.looks)]);
         DOM.landscapeOutput.value = toPromptLine([...new Set(buckets.landscape)]);
+        DOM.actionOutput.value = toPromptLine([...new Set(buckets.action)]);
         DOM.nsfwOutput.value = toPromptLine([...new Set(buckets.nsfw)]);
         DOM.otherOutput.value = toPromptLine([...new Set([...buckets.other, ...lowConfidenceOther])]);
 
@@ -328,6 +366,7 @@ function clearAll() {
     DOM.characterOutput.value = "";
     DOM.looksOutput.value = "";
     DOM.landscapeOutput.value = "";
+    DOM.actionOutput.value = "";
     DOM.nsfwOutput.value = "";
     DOM.otherOutput.value = "";
     setStatus("Ready.");
