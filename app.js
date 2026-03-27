@@ -10,6 +10,7 @@ const DOM = {
     landscapeOutput: document.getElementById("landscapeOutput"),
     nsfwOutput: document.getElementById("nsfwOutput"),
     otherOutput: document.getElementById("otherOutput"),
+    uncertainOutput: document.getElementById("uncertainOutput"),
     copyButtons: document.querySelectorAll(".copy-btn"),
 };
 
@@ -167,7 +168,7 @@ function pickBestTag(inputTag, apiTags) {
             return (b.tag.post_count || 0) - (a.tag.post_count || 0);
         });
 
-    return scored[0].score >= 35 ? scored[0].tag : null;
+    return scored[0];
 }
 
 function categorizeTag(tagObj) {
@@ -252,15 +253,28 @@ async function analyzeInput() {
         }
 
         const allMatchedMap = new Map();
+        const uncertainItems = [];
 
         for (const candidate of candidates) {
             const query = tagToDanbooruQuery(candidate);
             const matches = await fetchDanbooruTags(query);
             const best = pickBestTag(candidate, matches);
 
-            if (best) {
-                allMatchedMap.set(best.name, best);
+            if (!best) {
+                uncertainItems.push(`${candidate} -> no close Danbooru match`);
+                continue;
             }
+
+            if (best.score < 35) {
+                uncertainItems.push(`${candidate} -> weak match: ${danbooruToTagText(best.tag.name)} (${best.score})`);
+                continue;
+            }
+
+            if (best.score < 55) {
+                uncertainItems.push(`${candidate} -> borderline match: ${danbooruToTagText(best.tag.name)} (${best.score})`);
+            }
+
+            allMatchedMap.set(best.tag.name, best.tag);
         }
 
         const allMatched = [...allMatchedMap.values()];
@@ -286,6 +300,7 @@ async function analyzeInput() {
         DOM.landscapeOutput.value = toPromptLine([...new Set(buckets.landscape)]);
         DOM.nsfwOutput.value = toPromptLine([...new Set(buckets.nsfw)]);
         DOM.otherOutput.value = toPromptLine([...new Set(buckets.other)]);
+        DOM.uncertainOutput.value = uncertainItems.join("\n");
 
         if (allMatched.length === 0) {
             setStatus("No Danbooru tags matched confidently. Try cleaner words or shorter phrases.", true);
@@ -309,6 +324,7 @@ function clearAll() {
     DOM.landscapeOutput.value = "";
     DOM.nsfwOutput.value = "";
     DOM.otherOutput.value = "";
+    DOM.uncertainOutput.value = "";
     setStatus("Ready.");
 }
 
