@@ -1,13 +1,16 @@
 # Danbooru Smart Prompt Formatter
 
-A fast static web app that:
+A modular Vite + React web app that:
 
 - Parses messy raw text from many formats.
 - Tries to match probable Danbooru tags via API.
 - Builds prompt outputs in separate categories:
 - Style / Quality
-- Character / Looks
+- Character
+- Looks / Appearance
 - Landscape / Scene
+- Action
+- NSFW Detected
 - Other / Meta
 - Lets you copy each output box with one click.
 
@@ -16,20 +19,31 @@ A fast static web app that:
 - Flexible parsing: line-based input, mixed separators, trailing counts (`29k`, `7.6M`, `665`) removed.
 - Danbooru integration: fetches likely tags from `https://danbooru.donmai.us/tags.json`.
 - Heuristic categorization for prompt-building workflow.
-- No backend needed. Works on GitHub Pages.
+- Component-based React UI and split logic modules for parser, API, and classifier.
+- No backend needed. Deploys to GitHub Pages.
 
 ## Local Run
 
-Open `index.html` directly in browser.
-
-Optional local server:
+Install dependencies and start the dev server:
 
 ```powershell
 cd c:\Users\Szymon\My-codes\prompt-formatter
-python -m http.server 8080
+npm install
+npm run dev
 ```
 
-Then open `http://localhost:8080`.
+Build production bundle:
+
+```powershell
+cd c:\Users\Szymon\My-codes\prompt-formatter
+npm run build
+```
+
+Preview production bundle locally:
+
+```powershell
+npm run preview
+```
 
 ## Push To GitHub
 
@@ -56,13 +70,12 @@ git push -u origin main
 
 ## Host On GitHub Pages
 
-1. Open your GitHub repository.
-2. Go to `Settings` -> `Pages`.
-3. Under `Build and deployment`:
-- Source: `Deploy from a branch`
-- Branch: `main`
-- Folder: `/ (root)`
-4. Save.
+Deployment is handled by GitHub Actions workflow in `.github/workflows/deploy-pages.yml`.
+
+1. Open repository `Settings` -> `Pages`.
+2. Set Source to `Deploy from a branch`.
+3. Choose branch `gh-pages` and folder `/ (root)`.
+4. Push to `main` branch to trigger deployment.
 
 After deploy, your app will be live at:
 

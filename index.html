@@ -1,108 +1,15 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Danbooru Prompt Formatter</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
-    <div class="bg-shape shape-a"></div>
-    <div class="bg-shape shape-b"></div>
-
-    <main class="app-shell">
-        <header class="hero">
-            <p class="eyebrow">Prompt Toolkit</p>
-            <h1>Danbooru Smart Formatter</h1>
-            <p class="subtitle">Paste noisy text in any format, match probable Danbooru tags, then copy clean grouped prompts.</p>
-        </header>
-
-        <section class="panel demo-note">
-            <p class="demo-title">Demo Build</p>
-            <p class="demo-text">This is a demo version. Feedback and comments are welcome.</p>
-            <p class="demo-text">DM on Discord: <strong>sathean</strong> (icon: Miku + Leon Kennedy).</p>
-        </section>
-
-        <section class="panel">
-            <label for="inputText">Raw Input</label>
-            <textarea id="inputText" placeholder="?&#10;1girl 7.6M&#10;?&#10;android 29k&#10;black gloves 604k"></textarea>
-            <div class="actions">
-                <button id="analyzeBtn" class="btn primary">Analyze Tags</button>
-                <button id="clearBtn" class="btn ghost">Clear</button>
-            </div>
-            <p id="statusText" class="status">Ready.</p>
-        </section>
-
-        <section class="panel grid outputs-grid">
-            <article class="output-card">
-                <div class="card-head">
-                    <h2>All Matched Tags</h2>
-                    <button class="copy-btn" data-copy-target="allTagsOutput">Copy</button>
-                </div>
-                <textarea id="allTagsOutput" readonly></textarea>
-            </article>
-
-            <article class="output-card">
-                <div class="card-head">
-                    <h2>Style / Quality</h2>
-                    <button class="copy-btn" data-copy-target="styleOutput">Copy</button>
-                </div>
-                <textarea id="styleOutput" readonly></textarea>
-            </article>
-
-            <article class="output-card">
-                <div class="card-head">
-                    <h2>Character</h2>
-                    <button class="copy-btn" data-copy-target="characterOutput">Copy</button>
-                </div>
-                <textarea id="characterOutput" readonly></textarea>
-            </article>
-
-            <article class="output-card">
-                <div class="card-head">
-                    <h2>Looks / Appearance</h2>
-                    <button class="copy-btn" data-copy-target="looksOutput">Copy</button>
-                </div>
-                <textarea id="looksOutput" readonly></textarea>
-            </article>
-
-            <article class="output-card">
-                <div class="card-head">
-                    <h2>Landscape / Scene</h2>
-                    <button class="copy-btn" data-copy-target="landscapeOutput">Copy</button>
-                </div>
-                <textarea id="landscapeOutput" readonly></textarea>
-            </article>
-
-            <article class="output-card">
-                <div class="card-head">
-                    <h2>Action</h2>
-                    <button class="copy-btn" data-copy-target="actionOutput">Copy</button>
-                </div>
-                <textarea id="actionOutput" readonly></textarea>
-            </article>
-
-            <article class="output-card">
-                <div class="card-head">
-                    <h2>NSFW Detected</h2>
-                    <button class="copy-btn" data-copy-target="nsfwOutput">Copy</button>
-                </div>
-                <textarea id="nsfwOutput" readonly></textarea>
-            </article>
-
-            <article class="output-card full-width">
-                <div class="card-head">
-                    <h2>Other / Meta</h2>
-                    <button class="copy-btn" data-copy-target="otherOutput">Copy</button>
-                </div>
-                <textarea id="otherOutput" readonly></textarea>
-            </article>
-        </section>
-    </main>
-
-    <script src="app.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
