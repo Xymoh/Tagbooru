@@ -6,6 +6,7 @@ const DOM = {
     allTagsOutput: document.getElementById("allTagsOutput"),
     styleOutput: document.getElementById("styleOutput"),
     characterOutput: document.getElementById("characterOutput"),
+    looksOutput: document.getElementById("looksOutput"),
     landscapeOutput: document.getElementById("landscapeOutput"),
     nsfwOutput: document.getElementById("nsfwOutput"),
     otherOutput: document.getElementById("otherOutput"),
@@ -35,24 +36,30 @@ const LANDSCAPE_KEYWORDS = [
     "stadium", "arena", "gymnasium", "gym",
 ];
 
-const CHARACTER_LOOKS_KEYWORDS = [
+const CHARACTER_IDENTITY_KEYWORDS = [
     "girl", "boy", "woman", "man", "1girl", "1boy", "2girls", "2boys", "solo", "duo",
+    "android", "cyborg", "elf", "demon", "angel", "catgirl", "fox girl", "schoolgirl",
+];
+
+const LOOKS_KEYWORDS = [
     "hair", "eyes", "face", "smile", "expression", "dress", "shirt", "skirt", "jacket",
-    "gloves", "boots", "stockings", "ears", "tail", "horns", "wings", "android", "cyborg",
-    "weapon", "sword", "gun", "nude", "nsfw", "hips", "thigh", "thighs", "waist", "navel",
-    "midriff", "skin", "braid", "braids", "crop top", "uniform", "elbow gloves", "twintails",
-    "very long hair", "long hair", "green hair", "green eyes", "bangs", "arched bangs", "sleeveless",
-    "sleeveless shirt", "piercing", "animal ear piercing", "ear piercing", "fringe", "ponytail",
-    "bob cut", "blush", "lipstick", "eyeliner", "eyeshadow", "freckles", "fang", "fangs",
-    "body", "torso", "chest", "abs", "muscular", "curvy", "petite", "skinny", "plump",
+    "gloves", "boots", "stockings", "ears", "tail", "horns", "wings", "weapon", "sword", "gun",
+    "hips", "thigh", "thighs", "waist", "navel", "midriff", "skin", "braid", "braids", "crop top",
+    "uniform", "elbow gloves", "twintails", "very long hair", "long hair", "green hair", "green eyes",
+    "bangs", "arched bangs", "sleeveless", "sleeveless shirt", "piercing", "animal ear piercing",
+    "ear piercing", "fringe", "ponytail", "bob cut", "blush", "lipstick", "eyeliner", "eyeshadow",
+    "freckles", "fang", "fangs", "body", "torso", "chest", "abs", "muscular", "curvy", "petite",
+    "skinny", "plump", "lips", "makeup", "nail polish", "red lips", "red nails", "nails",
 ];
 
 const NSFW_KEYWORDS = [
     "nsfw", "nude", "naked", "nipples", "areola", "breasts", "boobs", "cleavage", "underboob",
     "sideboob", "pussy", "vagina", "penis", "ass", "anus", "butt", "sex", "cum", "orgasm",
     "erotic", "explicit", "uncensored", "lewd", "suggestive", "lingerie", "panties", "thong",
-    "cameltoe", "topless", "bottomless",
+    "cameltoe", "topless", "bottomless", "fellatio", "testicles", "scrotum", "oral",
 ];
+
+const LOOKS_EXACT_TAGS = new Set(["v"]);
 
 const COMPOSITION_META_KEYWORDS = [
     "looking at viewer", "looking over shoulder", "from below", "from above", "side view",
@@ -171,6 +178,10 @@ function categorizeTag(tagObj) {
         return "nsfw";
     }
 
+    if (LOOKS_EXACT_TAGS.has(lower)) {
+        return "looks";
+    }
+
     if (
         tagObj.category === TAG_CATEGORY.ARTIST ||
         containsKeyword(lower, STYLE_KEYWORDS)
@@ -189,9 +200,13 @@ function categorizeTag(tagObj) {
     if (
         tagObj.category === TAG_CATEGORY.CHARACTER ||
         tagObj.category === TAG_CATEGORY.COPYRIGHT ||
-        containsKeyword(lower, CHARACTER_LOOKS_KEYWORDS)
+        containsKeyword(lower, CHARACTER_IDENTITY_KEYWORDS)
     ) {
         return "character";
+    }
+
+    if (containsKeyword(lower, LOOKS_KEYWORDS)) {
+        return "looks";
     }
 
     if (tagObj.category === TAG_CATEGORY.META) {
@@ -252,6 +267,7 @@ async function analyzeInput() {
         const buckets = {
             style: [],
             character: [],
+            looks: [],
             landscape: [],
             nsfw: [],
             other: [],
@@ -266,6 +282,7 @@ async function analyzeInput() {
         DOM.allTagsOutput.value = toPromptLine(allMatched.map((t) => danbooruToTagText(t.name)));
         DOM.styleOutput.value = toPromptLine([...new Set(buckets.style)]);
         DOM.characterOutput.value = toPromptLine([...new Set(buckets.character)]);
+        DOM.looksOutput.value = toPromptLine([...new Set(buckets.looks)]);
         DOM.landscapeOutput.value = toPromptLine([...new Set(buckets.landscape)]);
         DOM.nsfwOutput.value = toPromptLine([...new Set(buckets.nsfw)]);
         DOM.otherOutput.value = toPromptLine([...new Set(buckets.other)]);
@@ -288,6 +305,7 @@ function clearAll() {
     DOM.allTagsOutput.value = "";
     DOM.styleOutput.value = "";
     DOM.characterOutput.value = "";
+    DOM.looksOutput.value = "";
     DOM.landscapeOutput.value = "";
     DOM.nsfwOutput.value = "";
     DOM.otherOutput.value = "";
