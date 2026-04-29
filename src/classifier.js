@@ -6,7 +6,9 @@ import {
     LANDSCAPE_KEYWORDS,
     LOOKS_EXACT_TAGS,
     LOOKS_KEYWORDS,
+    META_KEYWORDS,
     NSFW_KEYWORDS,
+    NSFW_EXACT_TAGS,
     STYLE_EXACT_TAGS,
     STYLE_KEYWORDS,
     TAG_CATEGORY,
@@ -17,14 +19,17 @@ export function categorizeTag(tagObj) {
     const text = danbooruToTagText(tagObj.name);
     const lower = text.toLowerCase();
 
-    if (containsKeyword(lower, NSFW_KEYWORDS)) {
+    // Check explicit NSFW tags first (highest priority)
+    if (NSFW_EXACT_TAGS.has(lower) || containsKeyword(lower, NSFW_KEYWORDS)) {
         return "nsfw";
     }
 
+    // Check explicit LOOKS tags
     if (LOOKS_EXACT_TAGS.has(lower)) {
         return "looks";
     }
 
+    // Style category (artist, style keywords)
     if (
         tagObj.category === TAG_CATEGORY.ARTIST ||
         STYLE_EXACT_TAGS.has(lower) ||
@@ -33,14 +38,17 @@ export function categorizeTag(tagObj) {
         return "style";
     }
 
-    if (containsKeyword(lower, LOOKS_KEYWORDS) || lower.includes("handlebar") || lower.includes("battery")) {
+    // LOOKS category
+    if (containsKeyword(lower, LOOKS_KEYWORDS)) {
         return "looks";
     }
 
+    // Copyright
     if (tagObj.category === TAG_CATEGORY.COPYRIGHT) {
         return "copyright";
     }
 
+    // Character identity
     if (
         tagObj.category === TAG_CATEGORY.CHARACTER ||
         CHARACTER_IDENTITY_EXACT_TAGS.has(lower) ||
@@ -49,18 +57,27 @@ export function categorizeTag(tagObj) {
         return "character";
     }
 
+    // Landscape/environment
     if (containsKeyword(lower, LANDSCAPE_KEYWORDS)) {
         return "landscape";
     }
 
+    // Action/pose
     if (containsKeyword(lower, ACTION_KEYWORDS)) {
         return "action";
     }
 
+    // Composition/framing/meta elements
     if (containsKeyword(lower, COMPOSITION_META_KEYWORDS)) {
         return "composition";
     }
 
+    // Meta tags (orientations, ratings, etc.)
+    if (containsKeyword(lower, META_KEYWORDS)) {
+        return "other";
+    }
+
+    // Danbooru META category
     if (tagObj.category === TAG_CATEGORY.META || tagObj.category === TAG_CATEGORY.GENERAL) {
         return "other";
     }

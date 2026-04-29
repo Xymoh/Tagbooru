@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { splitAndCleanCandidates } from "./parser";
-import { fetchDanbooruTags, pickBestTag } from "./tagService";
+import { ensureLocalTagIndexLoaded, fetchDanbooruTags, pickBestTag } from "./tagService";
 import { categorizeTag } from "./classifier";
 import { danbooruToTagText, tagToDanbooruQuery, toPromptLine } from "./utils";
 
@@ -69,14 +69,22 @@ export default function App() {
         }
 
         setIsLoading(true);
-        setInfo("Analyzing and matching tags...");
+        setInfo("Loading full local tag index...");
 
         try {
+            try {
+                await ensureLocalTagIndexLoaded();
+            } catch {
+                setInfo("Local tag index unavailable, falling back to online matching...");
+            }
+
             const candidates = splitAndCleanCandidates(inputText);
             if (!candidates.length) {
                 setError("No valid candidates found.");
                 return;
             }
+
+            setInfo("Analyzing and matching tags...");
 
             const allMatchedMap = new Map();
             const lowConfidenceOther = [];

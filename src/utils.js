@@ -1,5 +1,15 @@
 export function containsKeyword(text, keywords) {
-    return keywords.some((key) => text.includes(key));
+    return keywords.some((keyword) => {
+        const normalizedKeyword = keyword.toLowerCase();
+
+        if (normalizedKeyword.includes(" ") || normalizedKeyword.includes("_") || /[^a-z0-9]/.test(normalizedKeyword)) {
+            return text.includes(normalizedKeyword);
+        }
+
+        const escaped = normalizedKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const pattern = new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`);
+        return pattern.test(text);
+    });
 }
 
 export function normalizeTagName(tag) {

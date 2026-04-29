@@ -1,0 +1,203 @@
+{
+  "previously_uncategorized_tags": {
+    "!": {
+      "category": "composition",
+      "reason": "punctuation/decorative element"
+    },
+    "animal ear fluff": {
+      "category": "looks",
+      "reason": "exact tag match - body modification/styling"
+    },
+    "bulge": {
+      "category": "nsfw",
+      "reason": "exact tag match - sexual anatomy related"
+    },
+    "condom": {
+      "category": "nsfw",
+      "reason": "exact tag match - sexual content indicator"
+    },
+    "couch": {
+      "category": "landscape",
+      "reason": "furniture keyword - indoor environment"
+    },
+    "cross-laced clothes": {
+      "category": "looks",
+      "reason": "exact tag match - clothing detail"
+    },
+    "cross-laced top": {
+      "category": "looks",
+      "reason": "exact tag match - clothing detail"
+    },
+    "erection": {
+      "category": "nsfw",
+      "reason": "exact tag match - sexual anatomy"
+    },
+    "frills": {
+      "category": "looks",
+      "reason": "exact tag match - clothing detail/styling"
+    },
+    "hands on another's shoulders": {
+      "category": "composition",
+      "reason": "gesture/positioning keyword - composition element"
+    },
+    "hands on another's legs": {
+      "category": "composition",
+      "reason": "gesture/positioning keyword - composition element"
+    },
+    "heart": {
+      "category": "composition",
+      "reason": "decorative element keyword - scene composition"
+    },
+    "hetero": {
+      "category": "other",
+      "reason": "meta tag - sexual orientation"
+    },
+    "official alternate costume": {
+      "category": "other",
+      "reason": "meta tag - version/variant indicator"
+    },
+    "on couch": {
+      "category": "landscape",
+      "reason": "furniture + position - environment setting"
+    },
+    "open mouth": {
+      "category": "looks",
+      "reason": "exact tag match - facial feature"
+    },
+    "underwear": {
+      "category": "nsfw",
+      "reason": "exact tag match - sexual content indicator (nsfw prioritized over looks)"
+    },
+    "on another's legs": {
+      "category": "composition",
+      "reason": "positioning keyword - composition/pose element"
+    }
+  },
+  "categorization_examples": {
+    "looks": {
+      "description": "Visual appearance, clothing, accessories, body features",
+      "examples": [
+        "green hair",
+        "blue eyes", 
+        "red dress",
+        "stockings",
+        "short skirt",
+        "twintails",
+        "cat ears",
+        "freckles",
+        "open mouth",
+        "animal ear fluff"
+      ]
+    },
+    "landscape": {
+      "description": "Environments, locations, rooms, furniture",
+      "examples": [
+        "forest",
+        "bedroom",
+        "office",
+        "couch",
+        "kitchen",
+        "night sky",
+        "beach",
+        "indoor",
+        "building"
+      ]
+    },
+    "action": {
+      "description": "Poses, movements, activities, gestures",
+      "examples": [
+        "standing",
+        "sitting",
+        "running",
+        "dancing",
+        "holding hands",
+        "kissing",
+        "smiling",
+        "jumping"
+      ]
+    },
+    "composition": {
+      "description": "Framing, angles, positioning, decorative elements",
+      "examples": [
+        "looking at viewer",
+        "from above",
+        "close-up",
+        "full body",
+        "heart",
+        "bloom",
+        "on another's shoulders",
+        "hands on hips"
+      ]
+    },
+    "nsfw": {
+      "description": "Sexual and mature content",
+      "examples": [
+        "nude",
+        "panties",
+        "sex",
+        "bulge",
+        "condom",
+        "erection",
+        "breast",
+        "vagina"
+      ]
+    },
+    "style": {
+      "description": "Artistic style, quality, rendering technique",
+      "examples": [
+        "masterpiece",
+        "best quality",
+        "pixel art",
+        "cyberpunk",
+        "oil painting",
+        "manga style",
+        "lineart"
+      ]
+    },
+    "character": {
+      "description": "Character identity, count, type",
+      "examples": [
+        "1girl",
+        "2boys",
+        "maid",
+        "police",
+        "elf",
+        "demon",
+        "solo"
+      ]
+    },
+    "copyright": {
+      "description": "Franchise, series, specific characters",
+      "examples": [
+        "honkai star rail",
+        "genshin impact",
+        "pokemon",
+        "final fantasy"
+      ]
+    },
+    "other": {
+      "description": "Meta tags, orientations, ratings, technical",
+      "examples": [
+        "hetero",
+        "gay",
+        "official",
+        "fanart",
+        "rating",
+        "screenshot"
+      ]
+    }
+  },
+  "stats": {
+    "verified_full_export": false,
+    "note": "illustrative categorization reference only; not generated from a complete Danbooru scrape",
+    "total_looks_keywords": 350,
+    "total_landscape_keywords": 450,
+    "total_action_keywords": 220,
+    "total_composition_keywords": 180,
+    "total_nsfw_keywords": 320,
+    "total_style_keywords": 120,
+    "total_character_keywords": 50,
+    "total_meta_keywords": 40,
+    "total_keywords": 1730
+  }
+}

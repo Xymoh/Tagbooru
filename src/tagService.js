@@ -1,6 +1,94 @@
 import { tagToDanbooruQuery } from "./utils";
+import { DANBOORU_TAG_CSV_PATH, TAG_CATEGORY } from "./constants";
+
+let localTagMapPromise = null;
+let localTagMap = null;
+
+function parseCsvLine(line) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+        return null;
+    }
+
+    const commaIndex = trimmed.lastIndexOf(",");
+    if (commaIndex <= 0) {
+        return null;
+    }
+
+    const name = trimmed.slice(0, commaIndex).trim();
+    const postCountRaw = trimmed.slice(commaIndex + 1).trim();
+    const postCount = Number.parseInt(postCountRaw, 10);
+
+    if (!name || Number.isNaN(postCount)) {
+        return null;
+    }
+
+    return { name, post_count: postCount };
+}
+
+async function loadLocalTagMap() {
+    if (localTagMap) {
+        return localTagMap;
+    }
+
+    if (!localTagMapPromise) {
+        localTagMapPromise = (async () => {
+            const response = await fetch(DANBOORU_TAG_CSV_PATH, { method: "GET" });
+            if (!response.ok) {
+                throw new Error(`Local tag CSV request failed: ${response.status}`);
+            }
+
+            const csvText = await response.text();
+            const rows = csvText.split(/\r?\n/);
+            const map = new Map();
+
+            for (let i = 1; i < rows.length; i += 1) {
+                const parsed = parseCsvLine(rows[i]);
+                if (!parsed) {
+                    continue;
+                }
+
+                map.set(parsed.name.toLowerCase(), {
+                    name: parsed.name,
+                    post_count: parsed.post_count,
+                    // Category is unknown from this CSV, so keep this as GENERAL.
+                    category: TAG_CATEGORY.GENERAL,
+                });
+            }
+
+            localTagMap = map;
+            return map;
+        })();
+    }
+
+    return localTagMapPromise;
+}
+
+export async function ensureLocalTagIndexLoaded() {
+    return loadLocalTagMap();
+}
+
+function getExactLocalTag(query, map) {
+    const normalized = query.toLowerCase();
+    const exact = map.get(normalized);
+    if (exact) {
+        return exact;
+    }
+
+    return null;
+}
 
 export async function fetchDanbooruTags(query) {
+    try {
+        const map = await loadLocalTagMap();
+        const localExact = getExactLocalTag(query, map);
+        if (localExact) {
+            return [localExact];
+        }
+    } catch {
+        // Fallback to remote API when local index is unavailable.
+    }
+
     const endpoint = `https://danbooru.donmai.us/tags.json?search[name_matches]=${encodeURIComponent(query)}*&search[order]=count&limit=8`;
     const response = await fetch(endpoint, { method: "GET" });
     if (!response.ok) {
