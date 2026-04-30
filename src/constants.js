@@ -175,7 +175,7 @@ export const CHARACTER_IDENTITY_KEYWORDS = [
     "policewoman", "zombie", "monster", "monster male", "monster female",
 ];
 
-export const CHARACTER_IDENTITY_EXACT_TAGS = new Set(["police", "bangboo"]);
+export const CHARACTER_IDENTITY_EXACT_TAGS = new Set(["police", "bangboo", "character name"]);
 
 export const LOOKS_KEYWORDS = [
     // Hair styles & colors
@@ -257,6 +257,7 @@ export const LOOKS_KEYWORDS = [
     "thigh highsocks", "thigh highs", "kneehighs", "knee highs", "ankle socks", "socks",
     "over-kneesocks", "zettai ryouiki", "absolute territory", "shorts", "short shorts", "daisy dukes",
     "hotpants", "boyshorts", "running shorts", "sweatpants", "joggers", "yoga pants", "leggings",
+    "gloves", "blue gloves", "white gloves", "black gloves", "thighhighs", "brown thighhighs",
     "capris", "capri pants", "cropped pants", "skinny jeans", "jeans", "denim", "cargo pants",
     "camo pants", "leather pants", "vinyl pants", "latex pants", "mesh pants", "see-through pants",
     "bermuda shorts", "overall shorts", "romper", "jumpsuit", "onesie",
@@ -402,13 +403,13 @@ export const NSFW_KEYWORDS = [
     "cleavage", "deep cleavage", "underboob", "underboob emphasis", "sideboob", "side boob",
     
     // Genitalia & sexual anatomy
-    "pussy", "vagina", "vulva", "labia", "genital", "genitalia",
+    "pussy", "vagina", "vulva", "labia", "genital", "genitalia", "cunnilingus",
     "penis", "cock", "dick", "phallus", "erect", "erection", "hard", "bulge",
     "testicle", "testicles", "balls", "scrotum", "ballsack", "testes",
     "ass", "asshole", "anus", "anal", "butt", "butthole",
     
     // Sexual acts & situations
-    "sex", "sexual", "fucking", "fuck", "sexual intercourse", "intercourse",
+    "sex", "sexual", "fucking", "fuck", "sexual intercourse", "intercourse", "69", "groping", "handjob",
     "penetration", "penetrating", "inserted", "insertion", "cock insertion",
     "cum", "cumshot", "ejaculation", "semen", "jizz", "spunk",
     "cum on face", "facial", "facial cumshot", "cum on cheek", "cum on breast", "cum on pussy",
@@ -505,6 +506,10 @@ export const NSFW_KEYWORDS = [
 
 export const NSFW_EXACT_TAGS = new Set([
     "hetero", "bulge", "condom", "erection", "underwear", "open mouth",
+]);
+
+export const COPYRIGHT_EXACT_TAGS = new Set([
+    "copyright", "copyrights", "franchise", "series", "crossover", "parody"
 ]);
 
 export const META_KEYWORDS = [

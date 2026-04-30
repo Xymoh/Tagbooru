@@ -3,6 +3,7 @@ import {
     CHARACTER_IDENTITY_EXACT_TAGS,
     CHARACTER_IDENTITY_KEYWORDS,
     COMPOSITION_META_KEYWORDS,
+    COPYRIGHT_EXACT_TAGS,
     LANDSCAPE_KEYWORDS,
     LOOKS_EXACT_TAGS,
     LOOKS_KEYWORDS,
@@ -44,7 +45,7 @@ export function categorizeTag(tagObj) {
     }
 
     // Copyright
-    if (tagObj.category === TAG_CATEGORY.COPYRIGHT) {
+    if (tagObj.category === TAG_CATEGORY.COPYRIGHT || COPYRIGHT_EXACT_TAGS.has(lower)) {
         return "copyright";
     }
 
