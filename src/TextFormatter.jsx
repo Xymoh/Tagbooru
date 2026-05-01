@@ -72,8 +72,12 @@ export default function TextFormatter() {
         setInfo("Loading full local tag index...");
 
         try {
+            // Load the local tag index if available and keep a reference to it.
+            // We'll use this to detect two-word fragments that are actually
+            // two independent tags (e.g. "female ass" -> "female", "ass").
+            let localMap = null;
             try {
-                await ensureLocalTagIndexLoaded();
+                localMap = await ensureLocalTagIndexLoaded();
             } catch {
                 setInfo("Local tag index unavailable, falling back to online matching...");
             }
@@ -90,6 +94,49 @@ export default function TextFormatter() {
             const lowConfidenceOther = [];
 
             for (const candidate of candidates) {
+                // If candidate is a simple two-word phrase and localMap contains
+                // both words as standalone tags, match them individually to
+                // avoid prefix-based false positives from combined queries.
+                if (candidate.includes(" ") && localMap && typeof localMap.has === "function") {
+                    const parts = candidate.split(" ").map((s) => s.trim()).filter(Boolean);
+                    if (parts.length === 2) {
+                        const q0 = tagToDanbooruQuery(parts[0]);
+                        const q1 = tagToDanbooruQuery(parts[1]);
+                        if (localMap.has(q0) && localMap.has(q1)) {
+                            // Match first part
+                            const matches0 = await fetchDanbooruTags(q0);
+                            const best0 = pickBestTag(parts[0], matches0);
+                            if (!best0) {
+                                lowConfidenceOther.push(parts[0]);
+                            } else if (best0.score < 35) {
+                                lowConfidenceOther.push(parts[0]);
+                            } else {
+                                if (best0.score < 55) {
+                                    lowConfidenceOther.push(danbooruToTagText(best0.tag.name));
+                                }
+                                allMatchedMap.set(best0.tag.name, best0.tag);
+                            }
+
+                            // Match second part
+                            const matches1 = await fetchDanbooruTags(q1);
+                            const best1 = pickBestTag(parts[1], matches1);
+                            if (!best1) {
+                                lowConfidenceOther.push(parts[1]);
+                            } else if (best1.score < 35) {
+                                lowConfidenceOther.push(parts[1]);
+                            } else {
+                                if (best1.score < 55) {
+                                    lowConfidenceOther.push(danbooruToTagText(best1.tag.name));
+                                }
+                                allMatchedMap.set(best1.tag.name, best1.tag);
+                            }
+
+                            // Skip the combined match flow for this candidate.
+                            continue;
+                        }
+                    }
+                }
+
                 const query = tagToDanbooruQuery(candidate);
                 const matches = await fetchDanbooruTags(query);
                 const best = pickBestTag(candidate, matches);
