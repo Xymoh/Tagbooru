@@ -82,12 +82,6 @@ export function splitAndCleanCandidates(rawText) {
             continue;
         }
 
-        const words = stripped.split(" ").filter(Boolean);
-        if (words.length > 3 && !(stripped.includes("(") && stripped.includes(")"))) {
-            candidates.push(words.slice(0, 3).join(" "));
-            candidates.push(words.slice(-3).join(" "));
-        }
-
         candidates.push(stripped);
     }
 

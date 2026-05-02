@@ -89,6 +89,17 @@ export async function fetchDanbooruTags(query) {
         // Fallback to remote API when local index is unavailable.
     }
 
+    // Try exact match on remote API first to avoid wildcard false positives
+    // (e.g. "blowjob" matching "blowjob (drink)", "male" matching "male focus").
+    const exactEndpoint = `https://danbooru.donmai.us/tags.json?search[name_matches]=${encodeURIComponent(query)}&search[order]=count&limit=1`;
+    const exactResponse = await fetch(exactEndpoint, { method: "GET" });
+    if (exactResponse.ok) {
+        const exactResults = await exactResponse.json();
+        if (exactResults.length > 0) {
+            return exactResults;
+        }
+    }
+
     const endpoint = `https://danbooru.donmai.us/tags.json?search[name_matches]=${encodeURIComponent(query)}*&search[order]=count&limit=8`;
     const response = await fetch(endpoint, { method: "GET" });
     if (!response.ok) {
