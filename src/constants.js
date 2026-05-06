@@ -8,6 +8,29 @@ export const TAG_CATEGORY = {
 
 export const DANBOORU_TAG_CSV_PATH = "/danbooru_tags_post_count.csv";
 
+// --------------- Scoring thresholds ------------------------------------------
+// Used in TextFormatter.jsx and tagService.js to gate tag confidence levels.
+
+/** Tags scoring below this are discarded entirely. */
+export const SCORE_DISCARD = 35;
+
+/** Tags scoring below this are placed in the low-confidence "Other" bucket. */
+export const SCORE_LOW_CONFIDENCE = 55;
+
+/** Perfect match: tag name exactly equals the normalized query. */
+export const SCORE_EXACT = 100;
+
+/** Prefix match: tag name starts with the normalized query. */
+export const SCORE_PREFIX = 80;
+
+/** Contains match: tag name contains the normalized query. */
+export const SCORE_CONTAINS = 60;
+
+/** Maximum overlap-based score for partial token matches. */
+export const SCORE_OVERLAP_MAX = 50;
+
+// --------------- Style / Quality keywords ------------------------------------
+
 export const STYLE_KEYWORDS = [
     "masterpiece", "best quality", "high quality", "8k", "4k", "cinematic", "photorealistic",
     "anime coloring", "dramatic lighting", "volumetric lighting", "depth of field", "lineart",
@@ -29,6 +52,8 @@ export const STYLE_KEYWORDS = [
     "flat color", "vector", "vector art", "oil painting", "watercolor painting", "digital painting",
     "traditional media", "hand drawn", "sketch style", "comic book style", "comic style",
 ];
+
+// --------------- Landscape / Scene keywords ----------------------------------
 
 export const LANDSCAPE_KEYWORDS = [
     // Natural outdoor environments
@@ -169,6 +194,8 @@ export const LANDSCAPE_KEYWORDS = [
     "alternate dimension", "void", "abstract space", "surreal landscape",
 ];
 
+// --------------- Character identity ------------------------------------------
+
 export const CHARACTER_IDENTITY_KEYWORDS = [
     "girl", "boy", "woman", "man", "male", "female", "1girl", "1boy", "2girls", "2boys", "solo", "duo",
     "android", "cyborg", "elf", "demon", "angel", "catgirl", "fox girl", "schoolgirl",
@@ -176,6 +203,8 @@ export const CHARACTER_IDENTITY_KEYWORDS = [
 ];
 
 export const CHARACTER_IDENTITY_EXACT_TAGS = new Set(["police", "bangboo", "character name"]);
+
+// --------------- Looks / Appearance ------------------------------------------
 
 export const LOOKS_KEYWORDS = [
     // Hair styles & colors
@@ -315,6 +344,8 @@ export const LOOKS_EXACT_TAGS = new Set([
 
 export const STYLE_EXACT_TAGS = new Set(["zenless zone zero"]);
 
+// --------------- Action keywords ---------------------------------------------
+
 export const ACTION_KEYWORDS = [
     // Movement & locomotion
     "walking", "running", "sprinting", "jogging", "creeping", "crawling", "dragging",
@@ -393,6 +424,8 @@ export const ACTION_KEYWORDS = [
     "practicing", "training", "exercising", "working out", "running laps", "doing pushups",
     "doing situps", "boxing", "wrestling", "yoga", "pilates", "stretching",
 ];
+
+// --------------- NSFW keywords -----------------------------------------------
 
 export const NSFW_KEYWORDS = [
     // Nudity & exposure
@@ -508,9 +541,13 @@ export const NSFW_EXACT_TAGS = new Set([
     "hetero", "bulge", "condom", "erection", "underwear", "open mouth",
 ]);
 
+// --------------- Copyright ---------------------------------------------------
+
 export const COPYRIGHT_EXACT_TAGS = new Set([
     "copyright", "copyrights", "franchise", "series", "crossover", "parody"
 ]);
+
+// --------------- Meta --------------------------------------------------------
 
 export const META_KEYWORDS = [
     "hetero", "homosexual", "yuri", "yaoi", "bisexual", "asexual",
@@ -522,7 +559,7 @@ export const META_KEYWORDS = [
     "metadata", "title", "caption", "description", "tag", "tags", "danbooru",
 ];
 
-
+// --------------- Composition -------------------------------------------------
 
 export const COMPOSITION_META_KEYWORDS = [
     // Framing & angles

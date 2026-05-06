@@ -4,15 +4,21 @@ import TextFormatter from "./TextFormatter";
 import ImageTagger from "./components/ImageTagger";
 import "./styles.css";
 
+const TABS = [
+    { key: "home", label: "Home", ariaLabel: "Home page" },
+    { key: "text", label: "Text Formatter", ariaLabel: "Text formatting tool" },
+    { key: "image", label: "Image Tagger", ariaLabel: "Image tagging tool download" },
+];
+
 export default function App() {
     const [currentTab, setCurrentTab] = useState("home");
 
     return (
         <>
-            <div className="bg-shape shape-a" />
-            <div className="bg-shape shape-b" />
+            <div className="bg-shape shape-a" aria-hidden="true" />
+            <div className="bg-shape shape-b" aria-hidden="true" />
 
-            <main className="app-shell">
+            <div className="app-shell">
                 <header className="hero" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                     <div>
                         <p className="eyebrow">Visual Toolkit</p>
@@ -20,33 +26,26 @@ export default function App() {
                     </div>
                 </header>
 
-                <nav style={{ display: "flex", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid var(--line)", paddingBottom: "1rem" }}>
-                    <button 
-                        className={`nav-btn ${currentTab === "home" ? "active" : ""}`} 
-                        onClick={() => setCurrentTab("home")}
-                    >
-                        Home
-                    </button>
-                    <button 
-                        className={`nav-btn ${currentTab === "text" ? "active" : ""}`} 
-                        onClick={() => setCurrentTab("text")}
-                    >
-                        Text Formatter
-                    </button>
-                    <button 
-                        className={`nav-btn ${currentTab === "image" ? "active" : ""}`} 
-                        onClick={() => setCurrentTab("image")}
-                    >
-                        Image Tagger
-                    </button>
+                <nav role="navigation" aria-label="Main navigation" style={{ display: "flex", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid var(--line)", paddingBottom: "1rem" }}>
+                    {TABS.map((tab) => (
+                        <button
+                            key={tab.key}
+                            className={`nav-btn ${currentTab === tab.key ? "active" : ""}`}
+                            onClick={() => setCurrentTab(tab.key)}
+                            aria-label={tab.ariaLabel}
+                            aria-current={currentTab === tab.key ? "page" : undefined}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
                 </nav>
 
-                <section className="content">
+                <main id="main-content" className="content">
                     {currentTab === "home" && <Home />}
                     {currentTab === "text" && <TextFormatter />}
                     {currentTab === "image" && <ImageTagger />}
-                </section>
-            </main>
+                </main>
+            </div>
         </>
     );
 }

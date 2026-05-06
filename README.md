@@ -1,4 +1,4 @@
-# Danbooru Smart Prompt Formatter
+# Tagbooru Toolkit
 
 A modular web app hosted on GitHub Pages that:
 
@@ -26,13 +26,13 @@ A modular web app hosted on GitHub Pages that:
 ## Usage
 
 This app is hosted live on GitHub Pages at:  
-`https://xymoh.github.io/prompt-formatter/`
+`https://xymoh.github.io/Tagbooru/`
 
 To use the app:
 1. Paste your raw, messy prompt text into the input area.
 2. The app will parse the text, match relevant Danbooru tags, and categorize them into the sections listed above.
 3. Click the copy button on any category box to copy the formatted prompt for that section.
-4. You can download the Image Tagger for offline use. To use the Image Tagger, navigate to the Image Tagger section on the page, download the app, and within the app upload or drag-and-drop an image, and the app will generate Danbooru tags automatically. 
+4. You can download the Image Tagger for offline use. To use the Image Tagger, navigate to the Image Tagger section on the page, download the app, and within the app upload or drag-and-drop an image, and the app will generate Danbooru tags automatically.
 
 ## Notes
 

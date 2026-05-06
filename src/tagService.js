@@ -1,9 +1,15 @@
 import { tagToDanbooruQuery } from "./utils";
-import { DANBOORU_TAG_CSV_PATH, TAG_CATEGORY } from "./constants";
+import { DANBOORU_TAG_CSV_PATH, TAG_CATEGORY, SCORE_EXACT, SCORE_PREFIX, SCORE_CONTAINS, SCORE_OVERLAP_MAX } from "./constants";
 
 let localTagMapPromise = null;
 let localTagMap = null;
 
+/**
+ * Parse a CSV line into { name, post_count }.
+ * Uses the LAST comma as delimiter so that tag names containing commas
+ * are handled correctly (Danbooru tag names can contain commas).
+ * The post count is always the last field.
+ */
 function parseCsvLine(line) {
     const trimmed = line.trim();
     if (!trimmed) {
@@ -51,7 +57,7 @@ async function loadLocalTagMap() {
                 map.set(parsed.name.toLowerCase(), {
                     name: parsed.name,
                     post_count: parsed.post_count,
-                    // Category is unknown from this CSV, so keep this as GENERAL.
+                    // Category is unknown from this CSV, so treat as GENERAL.
                     category: TAG_CATEGORY.GENERAL,
                 });
             }
@@ -113,15 +119,15 @@ function scoreCandidateMatch(inputTag, apiTag) {
     const name = apiTag.name.toLowerCase();
 
     if (name === normalizedInput) {
-        return 100;
+        return SCORE_EXACT;
     }
 
     if (name.startsWith(normalizedInput)) {
-        return 80;
+        return SCORE_PREFIX;
     }
 
     if (name.includes(normalizedInput)) {
-        return 60;
+        return SCORE_CONTAINS;
     }
 
     const inputTokens = normalizedInput.split("_");
@@ -129,7 +135,7 @@ function scoreCandidateMatch(inputTag, apiTag) {
     const overlap = inputTokens.filter((token) => nameTokens.includes(token)).length;
     const overlapRatio = overlap / Math.max(inputTokens.length, 1);
 
-    return Math.round(overlapRatio * 50);
+    return Math.round(overlapRatio * SCORE_OVERLAP_MAX);
 }
 
 export function pickBestTag(inputTag, apiTags) {
