@@ -20,12 +20,12 @@ export default function ImageTagger() {
 
                     <div style={{ marginTop: "2rem", paddingBottom: "1rem" }}>
                         <a
-                            href="https://github.com/Xymoh/img-tagboru-ai/releases/tag/v1.3.0"
+                            href="https://github.com/Xymoh/img-tagboru-ai/releases/"
                             className="btn primary"
                             style={{ display: "inline-block", fontSize: "1.1rem", padding: "0.8rem 1.5rem", textDecoration: "none" }}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="Download Img-Tagboru AI v1.3.0 for Windows"
+                            aria-label="Download Img-Tagboru AI for Windows"
                         >
                             ↓ Download for Windows
                         </a>

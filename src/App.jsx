@@ -2,6 +2,7 @@ import { useState } from "react";
 import Home from "./components/Home";
 import TextFormatter from "./TextFormatter";
 import ImageTagger from "./components/ImageTagger";
+import { useBorderTrace } from "./hooks/useBorderTrace";
 import "./styles.css";
 
 const TABS = [
@@ -9,6 +10,21 @@ const TABS = [
     { key: "text", label: "Text Formatter", ariaLabel: "Text formatting tool" },
     { key: "image", label: "Image Tagger", ariaLabel: "Image tagging tool download" },
 ];
+
+function NavButton({ isActive, onClick, ariaLabel, ariaCurrent, children }) {
+    const ref = useBorderTrace({ radius: 8 });
+    return (
+        <button
+            ref={ref}
+            className={`nav-btn ${isActive ? "active" : ""}`}
+            onClick={onClick}
+            aria-label={ariaLabel}
+            aria-current={ariaCurrent}
+        >
+            {children}
+        </button>
+    );
+}
 
 export default function App() {
     const [currentTab, setCurrentTab] = useState("home");
@@ -28,15 +44,15 @@ export default function App() {
 
                 <nav role="navigation" aria-label="Main navigation" style={{ display: "flex", gap: "1rem", marginBottom: "2rem", borderBottom: "1px solid var(--line)", paddingBottom: "1rem" }}>
                     {TABS.map((tab) => (
-                        <button
+                        <NavButton
                             key={tab.key}
-                            className={`nav-btn ${currentTab === tab.key ? "active" : ""}`}
+                            isActive={currentTab === tab.key}
                             onClick={() => setCurrentTab(tab.key)}
-                            aria-label={tab.ariaLabel}
-                            aria-current={currentTab === tab.key ? "page" : undefined}
+                            ariaLabel={tab.ariaLabel}
+                            ariaCurrent={currentTab === tab.key ? "page" : undefined}
                         >
                             {tab.label}
-                        </button>
+                        </NavButton>
                     ))}
                 </nav>
 

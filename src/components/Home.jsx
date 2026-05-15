@@ -1,3 +1,15 @@
+import { useBorderTrace } from "../hooks/useBorderTrace";
+
+function TracedLink({ href, className, style, title, target, rel, children, radius = 10, color }) {
+    const ref = useBorderTrace({ radius, color });
+    return (
+        <a ref={ref} href={href} className={className} style={style}
+            title={title} target={target} rel={rel}>
+            {children}
+        </a>
+    );
+}
+
 export default function Home() {
     return (
         <div className="panel">
@@ -24,7 +36,7 @@ export default function Home() {
                 </p>
                 <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
                     <a href="https://ko-fi.com/saekimon" className="btn primary" style={{ textDecoration: "none" }} target="_blank" rel="noopener noreferrer">☕ Ko-fi</a>
-                    <a href="#" className="btn ghost" style={{ textDecoration: "none" }} title="Coming soon">Patreon (Coming soon)</a>
+                    <TracedLink href="#" className="btn ghost" style={{ textDecoration: "none" }} title="Coming soon">Patreon (Coming soon)</TracedLink>
                 </div>
             </div>
         </div>

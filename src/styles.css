@@ -9,6 +9,9 @@
     --line: #34414d;
     --ok: #34d399;
     --error: #fb7185;
+    --indigo: #818cf8;
+    --indigo-soft: rgba(129, 140, 248, 0.12);
+    --unknown-muted: rgba(154, 167, 180, 0.55);
 }
 
 * {
@@ -136,11 +139,12 @@ h1 {
     margin-top: 1.5rem;
     backdrop-filter: blur(8px);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s ease;
+    position: relative;
 }
 
 .panel:hover {
-    border-color: rgba(249, 115, 22, 0.3);
-    transition: border-color 0.3s ease;
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.35);
 }
 
 .demo-note {
@@ -178,7 +182,7 @@ textarea {
     font-size: 0.95rem;
     padding: 1rem;
     resize: vertical;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 textarea:focus {
@@ -208,12 +212,27 @@ textarea::placeholder {
     font-family: inherit;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 120ms ease, filter 120ms ease;
+    transition: box-shadow 0.25s ease, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    position: relative;
+    isolation: isolate;
 }
 
-.btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.08);
+.btn:active {
+    transform: scale(0.96) translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Orange gradient buttons — glow on hover, no border trace */
+.btn.primary:hover,
+.btn.copy-all-btn:hover,
+.copy-all-btn:hover {
+    box-shadow: 0 4px 18px rgba(249, 115, 22, 0.45);
+}
+
+/* Ghost / dark buttons — subtle lift on hover, border trace handles the rest */
+.btn.ghost:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .btn:focus-visible {
@@ -262,6 +281,7 @@ textarea::placeholder {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     margin-top: 1rem;
+    align-items: stretch;
 }
 
 .outputs-grid-header {
@@ -272,24 +292,42 @@ textarea::placeholder {
     margin-bottom: -0.5rem;
 }
 
+.outputs-grid-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
 .output-card {
     background: rgba(16, 20, 24, 0.7);
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: 1rem;
     animation: cardRise 420ms ease;
-    transition: border-color 0.3s ease, transform 0.2s ease;
+    transition: background 0.25s ease;
     min-width: 220px;
-    min-height: 100px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .output-card:hover {
-    border-color: rgba(249, 115, 22, 0.4);
-    transform: translateY(-2px);
+    background: rgba(20, 25, 30, 0.85);
 }
+
+/* ============================================================
+   ANIMATED FILL-UP BORDER
+   Handled via useBorderTrace hook (SVG stroke-dashoffset).
+   These rules just ensure the host elements are positioned
+   so the injected SVG overlay sits correctly.
+   ============================================================ */
 
 .output-card textarea {
     min-height: 120px;
+    flex: 1 1 auto;
+    resize: vertical;
 }
 
 .full-width {
@@ -310,9 +348,13 @@ textarea::placeholder {
 }
 
 .tag-count {
-    font-size: 0.78rem;
-    color: var(--muted);
-    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--primary);
+    background: rgba(249, 115, 22, 0.12);
+    padding: 0.1em 0.5em;
+    border-radius: 999px;
+    font-weight: 600;
+    margin-left: 0.3em;
 }
 
 h2 {
@@ -329,15 +371,119 @@ h2 {
     cursor: pointer;
     font-family: inherit;
     font-size: 0.82rem;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    position: relative;
+    isolation: isolate;
 }
 
 .copy-btn:hover {
-    border-color: #4f6377;
+    background: #1e2d3a;
+}
+
+.copy-btn:active {
+    transform: scale(0.95) translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .copy-btn:focus-visible {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
+}
+
+/* ---------- Source Material card (indigo theme) ---------- */
+
+.source-material {
+    box-shadow: inset 4px 0 0 var(--indigo), 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.source-material:hover {
+    background: rgba(16, 20, 24, 0.85);
+}
+
+.source-material .copy-btn {
+    border-color: rgba(129, 140, 248, 0.35);
+}
+
+.source-material textarea:focus {
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+
+.source-badge {
+    color: var(--indigo);
+    background: var(--indigo-soft);
+}
+
+/* ---------- Unknown / Unresolved card ---------- */
+
+.unknown-card {
+    opacity: 0.75;
+}
+
+.unknown-card .card-head h2 {
+    color: var(--unknown-muted);
+    font-style: italic;
+}
+
+/* ---------- Toggle switch ---------- */
+
+.toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    background: var(--line);
+    border-radius: 999px;
+    transition: background 0.25s ease;
+    flex-shrink: 0;
+}
+
+.toggle-slider::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: var(--text);
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: var(--indigo);
+}
+
+.toggle-switch input:checked + .toggle-slider::after {
+    transform: translateX(18px);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.toggle-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
 }
 
 /* ---------- navigation buttons ---------- */
@@ -351,12 +497,18 @@ h2 {
     padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+    position: relative;
+    isolation: isolate;
 }
 
 .nav-btn:hover {
     color: var(--text);
     background: rgba(255,255,255,0.05);
+}
+
+.nav-btn:active {
+    transform: scale(0.96) translateY(1px);
 }
 
 .nav-btn:focus-visible {
@@ -432,12 +584,17 @@ h2 {
 /* ---------- loading indicator ---------- */
 
 .loading-indicator {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 0.4rem;
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+}
+
+/* When inside a button, remove extra vertical space and size for compact fit */
+.btn .loading-indicator {
+    margin-top: 0;
+    color: inherit;
 }
 
 .spinner {
@@ -447,6 +604,14 @@ h2 {
     border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
+}
+
+.btn .spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+    border-color: rgba(34, 21, 10, 0.3);
+    border-top-color: #22150a;
 }
 
 @keyframes spin {

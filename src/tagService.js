@@ -1,41 +1,50 @@
+/**
+ * Tag matching service — local CSV + Danbooru API.
+ *
+ * 1. Parses the local danbooru_tags_post_count.csv for fast exact lookups.
+ * 2. Falls back to the Danbooru REST API for fuzzy/wildcard matching.
+ * 3. Provides match scoring and best-pick selection.
+ */
+
 import { tagToDanbooruQuery } from "./utils";
-import { DANBOORU_TAG_CSV_PATH, TAG_CATEGORY, SCORE_EXACT, SCORE_PREFIX, SCORE_CONTAINS, SCORE_OVERLAP_MAX } from "./constants";
+import {
+    DANBOORU_TAG_CSV_PATH,
+    SCORE_EXACT,
+    SCORE_PREFIX,
+    SCORE_CONTAINS,
+    SCORE_OVERLAP_MAX,
+    TAG_CATEGORY,
+} from "./constants";
+import { resolveTagBatch } from "./danbooruApi";
+
+// --------------- Local CSV index ----------------------------------------------
 
 let localTagMapPromise = null;
 let localTagMap = null;
 
 /**
  * Parse a CSV line into { name, post_count }.
- * Uses the LAST comma as delimiter so that tag names containing commas
- * are handled correctly (Danbooru tag names can contain commas).
- * The post count is always the last field.
+ * Uses the LAST comma as delimiter so tag names containing commas
+ * are handled correctly (the post count is always the last field).
  */
 function parseCsvLine(line) {
     const trimmed = line.trim();
-    if (!trimmed) {
-        return null;
-    }
+    if (!trimmed) return null;
 
     const commaIndex = trimmed.lastIndexOf(",");
-    if (commaIndex <= 0) {
-        return null;
-    }
+    if (commaIndex <= 0) return null;
 
     const name = trimmed.slice(0, commaIndex).trim();
     const postCountRaw = trimmed.slice(commaIndex + 1).trim();
     const postCount = Number.parseInt(postCountRaw, 10);
 
-    if (!name || Number.isNaN(postCount)) {
-        return null;
-    }
+    if (!name || Number.isNaN(postCount)) return null;
 
     return { name, post_count: postCount };
 }
 
 async function loadLocalTagMap() {
-    if (localTagMap) {
-        return localTagMap;
-    }
+    if (localTagMap) return localTagMap;
 
     if (!localTagMapPromise) {
         localTagMapPromise = (async () => {
@@ -50,15 +59,12 @@ async function loadLocalTagMap() {
 
             for (let i = 1; i < rows.length; i += 1) {
                 const parsed = parseCsvLine(rows[i]);
-                if (!parsed) {
-                    continue;
-                }
+                if (!parsed) continue;
 
                 map.set(parsed.name.toLowerCase(), {
                     name: parsed.name,
                     post_count: parsed.post_count,
-                    // Category is unknown from this CSV, so treat as GENERAL.
-                    category: TAG_CATEGORY.GENERAL,
+                    category: TAG_CATEGORY.GENERAL, // will be overwritten by batch resolver
                 });
             }
 
@@ -77,12 +83,20 @@ export async function ensureLocalTagIndexLoaded() {
 function getExactLocalTag(query, map) {
     const normalized = query.toLowerCase();
     const exact = map.get(normalized);
-    if (exact) {
-        return exact;
+    if (exact) return exact;
+
+    // Fallback: strip trailing 's' for common plural forms
+    // (e.g. "1girls" → "1girl", "2boys" → "2boy")
+    if (normalized.endsWith("s") && normalized.length > 2) {
+        const singular = normalized.slice(0, -1);
+        const singularMatch = map.get(singular);
+        if (singularMatch) return singularMatch;
     }
 
     return null;
 }
+
+// --------------- Tag matching (CSV first, then API) ---------------------------
 
 export async function fetchDanbooruTags(query) {
     try {
@@ -96,7 +110,6 @@ export async function fetchDanbooruTags(query) {
     }
 
     // Try exact match on remote API first to avoid wildcard false positives
-    // (e.g. "blowjob" matching "blowjob (drink)", "male" matching "male focus").
     const exactEndpoint = `https://danbooru.donmai.us/tags.json?search[name_matches]=${encodeURIComponent(query)}&search[order]=count&limit=1`;
     const exactResponse = await fetch(exactEndpoint, { method: "GET" });
     if (exactResponse.ok) {
@@ -114,21 +127,15 @@ export async function fetchDanbooruTags(query) {
     return response.json();
 }
 
+// --------------- Scoring ------------------------------------------------------
+
 function scoreCandidateMatch(inputTag, apiTag) {
     const normalizedInput = tagToDanbooruQuery(inputTag);
     const name = apiTag.name.toLowerCase();
 
-    if (name === normalizedInput) {
-        return SCORE_EXACT;
-    }
-
-    if (name.startsWith(normalizedInput)) {
-        return SCORE_PREFIX;
-    }
-
-    if (name.includes(normalizedInput)) {
-        return SCORE_CONTAINS;
-    }
+    if (name === normalizedInput) return SCORE_EXACT;
+    if (name.startsWith(normalizedInput)) return SCORE_PREFIX;
+    if (name.includes(normalizedInput)) return SCORE_CONTAINS;
 
     const inputTokens = normalizedInput.split("_");
     const nameTokens = name.split("_");
@@ -139,9 +146,7 @@ function scoreCandidateMatch(inputTag, apiTag) {
 }
 
 export function pickBestTag(inputTag, apiTags) {
-    if (!apiTags || apiTags.length === 0) {
-        return null;
-    }
+    if (!apiTags || apiTags.length === 0) return null;
 
     const scored = apiTags
         .map((tag) => ({
@@ -149,11 +154,34 @@ export function pickBestTag(inputTag, apiTags) {
             score: scoreCandidateMatch(inputTag, tag),
         }))
         .sort((a, b) => {
-            if (b.score !== a.score) {
-                return b.score - a.score;
-            }
+            if (b.score !== a.score) return b.score - a.score;
             return (b.tag.post_count || 0) - (a.tag.post_count || 0);
         });
 
     return scored[0];
+}
+
+// --------------- Batch category resolution -----------------------------------
+
+/**
+ * Resolve real Danbooru categories for all matched tags using the batch API.
+ * Mutates each tag object's `.category` field in place.
+ *
+ * @param {Array<{name: string, category: number}>} matchedTags
+ * @param {(completed: number, total: number) => void} [onProgress]
+ * @returns {Promise<void>}
+ */
+export async function resolveAllCategories(matchedTags, onProgress) {
+    if (!matchedTags || matchedTags.length === 0) return;
+
+    const tagNames = matchedTags.map((t) => t.name);
+    const resolved = await resolveTagBatch(tagNames, { onProgress });
+
+    for (const tag of matchedTags) {
+        const key = tag.name.toLowerCase();
+        const info = resolved.get(key);
+        if (info && info.category >= 0) {
+            tag.category = info.category;
+        }
+    }
 }

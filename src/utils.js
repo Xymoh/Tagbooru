@@ -1,4 +1,14 @@
 /**
+ * Shared utility helpers used across the tag pipeline.
+ *
+ * Re-exports tag-normalization primitives from danbooruApi so every
+ * consumer can strip meta qualifiers and normalise for API lookups
+ * through one import path.
+ */
+
+export { stripMetaQualifiers, normalizeForApi } from "./danbooruApi";
+
+/**
  * Check whether `text` contains any of the `keywords`.
  *
  * For single-word keywords (no spaces, underscores, or special chars),
