@@ -1,41 +1,72 @@
 # Tagbooru Toolkit
 
-A modular web app hosted on GitHub Pages that:
+An all-in-one tagging and prompt formatting tool for anime generative AI workflows. Runs entirely in the browser — no backend required.
 
-- Parses messy raw text from many formats.
-- Tries to match probable Danbooru tags via API.
-- Builds prompt outputs in separate categories:
-  - Style / Quality
-  - Character
-  - Looks / Appearance
-  - Landscape / Scene
-  - Action
-  - NSFW Detected
-  - Other / Meta
-- Lets you copy each output box with one click.
+**Live:** https://xymoh.github.io/Tagbooru/
 
 ## Features
 
-- Flexible parsing: line-based input, mixed separators, trailing counts (`29k`, `7.6M`, `665`) removed.
-- Danbooru integration: fetches likely tags from `https://danbooru.donmai.us/tags.json`.
-- Heuristic categorization for prompt-building workflow.
-- Component-based React UI and split logic modules for parser, API, and classifier.
-- No backend needed; runs entirely in the browser.
-- **Image Tagger**: Upload or drag-and-drop images to automatically generate Danbooru tags using AI. Powered by [img-tagboru-ai](https://github.com/Xymoh/img-tagboru-ai). The Image Tagger is accessible directly from the app's page and can be downloaded for offline use.
+### Text Formatter
 
-## Usage
+Paste noisy, unformatted text from any source and get clean, categorized Danbooru tag prompts.
 
-This app is hosted live on GitHub Pages at:  
-`https://xymoh.github.io/Tagbooru/`
+- Parses messy input: line-based, mixed separators, trailing counts (`29k`, `7.6M`, `665`) stripped automatically
+- Matches probable Danbooru tags via the Danbooru API and a local offline index of 1M+ tags
+- Categorizes matched tags into organized prompt blocks:
+  - Character
+  - Series / Franchise (Source Material)
+  - Copyright
+  - Artist
+  - General
+  - Style / Quality
+  - Looks / Appearance
+  - Landscape / Scene
+  - Action
+  - Composition
+  - NSFW
+  - Meta
+- One-click copy per category or copy all at once
+- Source Material toggle to include/exclude franchise labels
 
-To use the app:
-1. Paste your raw, messy prompt text into the input area.
-2. The app will parse the text, match relevant Danbooru tags, and categorize them into the sections listed above.
-3. Click the copy button on any category box to copy the formatted prompt for that section.
-4. You can download the Image Tagger for offline use. To use the Image Tagger, navigate to the Image Tagger section on the page, download the app, and within the app upload or drag-and-drop an image, and the app will generate Danbooru tags automatically.
+### Image Tagger (Standalone Desktop App)
+
+A separate downloadable Windows application for local AI-powered image captioning. Available at [img-tagboru-ai](https://github.com/Xymoh/img-tagboru-ai).
+
+- Powered by WD14/SwinV2 models running locally on your GPU
+- Batch processing of entire image folders
+- Exports `.txt` caption files alongside images (LoRA training ready)
+- Configurable thresholds, blacklists, and whitelists
+- 100% offline — images never leave your machine
+
+## Privacy
+
+- **Text Formatter:** Uses a pre-downloaded CSV index for offline tag lookup. Online Danbooru API calls are made only for tag matching (no images or personal data sent).
+- **Image Tagger:** Runs entirely on your local machine via the standalone desktop app.
+
+## Tech Stack
+
+- React + Vite
+- No backend — static site hosted on GitHub Pages
+- Danbooru API integration for tag matching
+- SVG-based animated UI interactions
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+Output goes to `dist/`.
 
 ## Notes
 
-- Danbooru API rate limits can apply if you run many lookups rapidly.
-- Tag category bucketing is heuristic and can be tuned over time.
-- The Image Tagger feature relies on [img-tagboru-ai](https://github.com/Xymoh/img-tagboru-ai) for AI-powered image tagging.
+- Danbooru API rate limits may apply with rapid successive lookups.
+- Tag categorization is heuristic-based and continuously improved.
+- The Image Tagger desktop app is a separate project: [img-tagboru-ai](https://github.com/Xymoh/img-tagboru-ai).
