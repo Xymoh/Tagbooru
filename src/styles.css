@@ -9,6 +9,9 @@
     --line: #34414d;
     --ok: #34d399;
     --error: #fb7185;
+    --indigo: #818cf8;
+    --indigo-soft: rgba(129, 140, 248, 0.12);
+    --unknown-muted: rgba(154, 167, 180, 0.55);
 }
 
 * {
@@ -29,6 +32,41 @@ body {
     min-height: 100vh;
     position: relative;
 }
+
+/* ---------- skip-link ---------- */
+
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background: var(--primary);
+    color: #22150a;
+    font-weight: 700;
+    border-radius: 0 0 8px 0;
+    text-decoration: none;
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* ---------- screen-reader only ---------- */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---------- animated background shapes ---------- */
 
 .bg-shape {
     position: fixed;
@@ -56,6 +94,8 @@ body {
     right: -100px;
     animation: floatB 14s ease-in-out infinite;
 }
+
+/* ---------- shell ---------- */
 
 .app-shell {
     position: relative;
@@ -99,11 +139,12 @@ h1 {
     margin-top: 1.5rem;
     backdrop-filter: blur(8px);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s ease;
+    position: relative;
 }
 
 .panel:hover {
-    border-color: rgba(249, 115, 22, 0.3);
-    transition: border-color 0.3s ease;
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.35);
 }
 
 .demo-note {
@@ -141,7 +182,7 @@ textarea {
     font-size: 0.95rem;
     padding: 1rem;
     resize: vertical;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition: border-color 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 textarea:focus {
@@ -154,6 +195,8 @@ textarea::placeholder {
     color: var(--muted);
     opacity: 0.7;
 }
+
+/* ---------- buttons ---------- */
 
 .actions {
     display: flex;
@@ -169,12 +212,32 @@ textarea::placeholder {
     font-family: inherit;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 120ms ease, filter 120ms ease;
+    transition: box-shadow 0.25s ease, transform 0.1s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    position: relative;
+    isolation: isolate;
 }
 
-.btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.08);
+.btn:active {
+    transform: scale(0.96) translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Orange gradient buttons — glow on hover, no border trace */
+.btn.primary:hover,
+.btn.copy-all-btn:hover,
+.copy-all-btn:hover {
+    box-shadow: 0 4px 18px rgba(249, 115, 22, 0.45);
+}
+
+/* Ghost / dark buttons — subtle lift on hover, border trace handles the rest */
+.btn.ghost:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
 .btn:disabled {
@@ -193,6 +256,14 @@ textarea::placeholder {
     border-color: var(--line);
 }
 
+.copy-all-btn {
+    color: #22150a;
+    background: linear-gradient(130deg, var(--primary), #f59e0b);
+    margin-left: auto;
+}
+
+/* ---------- status ---------- */
+
 .status {
     margin: 0.8rem 0 0;
     color: var(--ok);
@@ -203,11 +274,29 @@ textarea::placeholder {
     color: var(--error);
 }
 
+/* ---------- outputs grid ---------- */
+
 .outputs-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
     margin-top: 1rem;
+    align-items: stretch;
+}
+
+.outputs-grid-header {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: -0.5rem;
+}
+
+.outputs-grid-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 600;
 }
 
 .output-card {
@@ -216,24 +305,29 @@ textarea::placeholder {
     border-radius: 14px;
     padding: 1rem;
     animation: cardRise 420ms ease;
-    transition: border-color 0.3s ease, transform 0.2s ease;
+    transition: background 0.25s ease;
+    min-width: 220px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .output-card:hover {
-    border-color: rgba(249, 115, 22, 0.4);
-    transform: translateY(-2px);
+    background: rgba(20, 25, 30, 0.85);
 }
 
-.output-card {
-    background: rgba(16, 20, 24, 0.7);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 0.75rem;
-    animation: cardRise 420ms ease;
-}
+/* ============================================================
+   ANIMATED FILL-UP BORDER
+   Handled via useBorderTrace hook (SVG stroke-dashoffset).
+   These rules just ensure the host elements are positioned
+   so the injected SVG overlay sits correctly.
+   ============================================================ */
 
 .output-card textarea {
     min-height: 120px;
+    flex: 1 1 auto;
+    resize: vertical;
 }
 
 .full-width {
@@ -246,6 +340,21 @@ textarea::placeholder {
     gap: 0.6rem;
     align-items: center;
     margin-bottom: 0.45rem;
+}
+
+.card-head h2 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.tag-count {
+    font-size: 0.75rem;
+    color: var(--primary);
+    background: rgba(249, 115, 22, 0.12);
+    padding: 0.1em 0.5em;
+    border-radius: 999px;
+    font-weight: 600;
+    margin-left: 0.3em;
 }
 
 h2 {
@@ -262,69 +371,122 @@ h2 {
     cursor: pointer;
     font-family: inherit;
     font-size: 0.82rem;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    position: relative;
+    isolation: isolate;
 }
 
 .copy-btn:hover {
-    border-color: #4f6377;
+    background: #1e2d3a;
 }
 
-@keyframes floatA {
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
-    50% {
-        transform: translate(28px, 10px);
-    }
+.copy-btn:active {
+    transform: scale(0.95) translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes floatB {
-    0%,
-    100% {
-        transform: translate(0, 0);
-    }
-    50% {
-        transform: translate(-20px, -18px);
-    }
+.copy-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
 }
 
-@keyframes reveal {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* ---------- Source Material card (indigo theme) ---------- */
+
+.source-material {
+    box-shadow: inset 4px 0 0 var(--indigo), 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-@keyframes cardRise {
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.source-material:hover {
+    background: rgba(16, 20, 24, 0.85);
 }
 
-@media (max-width: 760px) {
-    .app-shell {
-        width: min(1100px, calc(100% - 1rem));
-        padding-top: 1.2rem;
-    }
-
-    .outputs-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .full-width {
-        grid-column: auto;
-    }
+.source-material .copy-btn {
+    border-color: rgba(129, 140, 248, 0.35);
 }
 
+.source-material textarea:focus {
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+}
+
+.source-badge {
+    color: var(--indigo);
+    background: var(--indigo-soft);
+}
+
+/* ---------- Unknown / Unresolved card ---------- */
+
+.unknown-card {
+    opacity: 0.75;
+}
+
+.unknown-card .card-head h2 {
+    color: var(--unknown-muted);
+    font-style: italic;
+}
+
+/* ---------- Toggle switch ---------- */
+
+.toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.toggle-slider {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    background: var(--line);
+    border-radius: 999px;
+    transition: background 0.25s ease;
+    flex-shrink: 0;
+}
+
+.toggle-slider::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: var(--text);
+    border-radius: 50%;
+    transition: transform 0.25s ease;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: var(--indigo);
+}
+
+.toggle-switch input:checked + .toggle-slider::after {
+    transform: translateX(18px);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.toggle-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+/* ---------- navigation buttons ---------- */
 
 .nav-btn {
     background: transparent;
@@ -335,7 +497,9 @@ h2 {
     padding: 0.5rem 1rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+    position: relative;
+    isolation: isolate;
 }
 
 .nav-btn:hover {
@@ -343,11 +507,21 @@ h2 {
     background: rgba(255,255,255,0.05);
 }
 
+.nav-btn:active {
+    transform: scale(0.96) translateY(1px);
+}
+
+.nav-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
 .nav-btn.active {
     color: var(--primary);
     background: rgba(249, 115, 22, 0.15);
 }
 
+/* ---------- custom slider ---------- */
 
 .custom-slider {
     -webkit-appearance: none;
@@ -389,6 +563,8 @@ h2 {
     transform: scale(1.2);
 }
 
+/* ---------- file preview ---------- */
+
 .file-preview-grid {
     display: flex;
     gap: 0.5rem;
@@ -405,3 +581,116 @@ h2 {
     border: 1px solid var(--line);
 }
 
+/* ---------- loading indicator ---------- */
+
+.loading-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* When inside a button, remove extra vertical space and size for compact fit */
+.btn .loading-indicator {
+    margin-top: 0;
+    color: inherit;
+}
+
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--line);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.btn .spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+    border-color: rgba(34, 21, 10, 0.3);
+    border-top-color: #22150a;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---------- keyframes ---------- */
+
+@keyframes floatA {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(28px, 10px);
+    }
+}
+
+@keyframes floatB {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(-20px, -18px);
+    }
+}
+
+@keyframes reveal {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes cardRise {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 760px) {
+    .app-shell {
+        width: min(1100px, calc(100% - 1rem));
+        padding-top: 1.2rem;
+    }
+
+    .outputs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+}
+
+/* ---------- reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .bg-shape,
+    .shape-a,
+    .shape-b {
+        animation: none !important;
+    }
+}
