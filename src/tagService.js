@@ -85,12 +85,16 @@ function getExactLocalTag(query, map) {
     const exact = map.get(normalized);
     if (exact) return exact;
 
-    // Fallback: strip trailing 's' for common plural forms
-    // (e.g. "1girls" → "1girl", "2boys" → "2boy")
+    // Fallback: strip trailing 's' only for known plural patterns
+    // (digit-prefixed like "1girls" → "1girl", "2boys" → "2boy")
     if (normalized.endsWith("s") && normalized.length > 2) {
-        const singular = normalized.slice(0, -1);
-        const singularMatch = map.get(singular);
-        if (singularMatch) return singularMatch;
+        const hasDigitPrefix = /^\d/.test(normalized);
+        const endsWithKnownPlural = /(?:girls|boys|guys)$/.test(normalized);
+        if (hasDigitPrefix || endsWithKnownPlural) {
+            const singular = normalized.slice(0, -1);
+            const singularMatch = map.get(singular);
+            if (singularMatch) return singularMatch;
+        }
     }
 
     return null;

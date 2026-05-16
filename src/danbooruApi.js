@@ -33,6 +33,7 @@ const STORAGE_KEY = "danbooru_tag_cache_v2";
  * @property {number}  category    – 0=general, 1=artist, 3=copyright, 4=character, 5=meta
  * @property {number}  post_count  – approximate post count
  * @property {number}  cachedAt    – Date.now() when cached
+ * @property {number}  [expiresAt] – explicit expiry timestamp (overrides TTL if set)
  */
 
 /** @type {Map<string, ResolvedTagInfo>} */
@@ -109,8 +110,9 @@ export async function resolveSingleTag(rawTagName) {
 
     // Check in-memory cache
     const cached = tagCache.get(normalized);
-    if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
-        return cached;
+    if (cached) {
+        const expiry = cached.expiresAt ?? (cached.cachedAt + CACHE_TTL_MS);
+        if (Date.now() < expiry) return cached;
     }
 
     try {
@@ -119,15 +121,15 @@ export async function resolveSingleTag(rawTagName) {
         );
 
         if (!response.ok) {
-            // Cache the miss briefly so we don't hammer the API on repeated failures.
-            tagCache.set(normalized, { name: normalized, category: -1, post_count: 0, cachedAt: Date.now() - CACHE_TTL_MS + 60_000 });
+            // Cache the miss briefly (1 min) so we don't hammer the API on repeated failures.
+            tagCache.set(normalized, { name: normalized, category: -1, post_count: 0, cachedAt: Date.now(), expiresAt: Date.now() + 60_000 });
             return null;
         }
 
         const results = await response.json();
         if (!results || results.length === 0) {
             // Cache the miss with a shorter TTL (5 min) so retries work.
-            tagCache.set(normalized, { name: normalized, category: -1, post_count: 0, cachedAt: Date.now() - CACHE_TTL_MS + 300_000 });
+            tagCache.set(normalized, { name: normalized, category: -1, post_count: 0, cachedAt: Date.now(), expiresAt: Date.now() + 300_000 });
             return null;
         }
 
@@ -142,8 +144,8 @@ export async function resolveSingleTag(rawTagName) {
         tagCache.set(normalized, info);
         return info;
     } catch {
-        // Network error — cache a short-lived miss.
-        tagCache.set(normalized, { name: normalized, category: -1, post_count: 0, cachedAt: Date.now() - CACHE_TTL_MS + 60_000 });
+        // Network error — cache a short-lived miss (1 min).
+        tagCache.set(normalized, { name: normalized, category: -1, post_count: 0, cachedAt: Date.now(), expiresAt: Date.now() + 60_000 });
         return null;
     }
 }
@@ -240,8 +242,11 @@ function loadPersistedCache() {
         const now = Date.now();
 
         for (const [key, value] of Object.entries(entries)) {
-            if (value && typeof value.category === "number" && now - value.cachedAt < CACHE_TTL_MS) {
-                tagCache.set(key, value);
+            if (value && typeof value.category === "number") {
+                const expiry = value.expiresAt ?? (value.cachedAt + CACHE_TTL_MS);
+                if (now < expiry) {
+                    tagCache.set(key, value);
+                }
             }
         }
     } catch {

@@ -440,9 +440,9 @@ h2 {
 .toggle-switch input[type="checkbox"] {
     position: absolute;
     opacity: 0;
-    width: 0;
-    height: 0;
-    pointer-events: none;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
 }
 
 .toggle-slider {
