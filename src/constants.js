@@ -402,7 +402,7 @@ export const NSFW_KEYWORDS = [
     "nsfw", "explicit", "uncensored", "censored",
     "nude", "naked", "full nude", "partial nude", "topless", "bottomless", "completely nude",
     "nipples", "nude nipples", "exposed nipples", "areola", "areolae", "areolas",
-    "breast", "breasts", "boobs", "boobjob", "booby", "breast focus", "breast emphasis",
+    "breast", "breasts", "boobs", "booby", "breast focus", "breast emphasis",
     "cleavage", "deep cleavage", "underboob", "underboob emphasis", "sideboob", "side boob",
     "pussy", "vagina", "vulva", "labia", "genital", "genitalia", "cunnilingus",
     "penis", "cock", "dick", "phallus", "erect", "erection", "hard", "bulge",
