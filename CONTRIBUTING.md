@@ -65,6 +65,8 @@ src/
 ├── constants.js           # Category keywords + score thresholds
 ├── utils.js               # Shared utility functions
 ├── styles.css             # All styles (single CSS file)
+├── hooks/
+│   └── useBorderTrace.js  # SVG animated border-trace hook
 └── components/
     ├── Home.jsx           # Landing page content
     └── ImageTagger.jsx    # Desktop app download page
@@ -93,8 +95,6 @@ Feature requests are welcome! Please describe:
 - The problem you're trying to solve
 - How you currently work around it
 - Your ideal solution
-
-See [`AUDIT_REPORT_FRONTEND.md`](AUDIT_REPORT_FRONTEND.md) for a list of known issues and planned improvements.
 
 ## Accessibility
 
